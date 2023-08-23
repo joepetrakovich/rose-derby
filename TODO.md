@@ -1,10 +1,11 @@
 
 # TODO
 ------------------
-- implement scheduling a race (and getting an id for it..or maybe you create it like in smash)
+DONE - implement scheduling a race (and getting an id for it..or maybe you create it like in smash)
 -- all races are public at first.
-- implement placing bets (which tally up odds)
-- implement finishing race (computing winners, payouts)
+DONE - implement placing bets (which tally up odds)
+DONE - implement finishing race (computing winners, payouts)
+- write tests to validate
 - build ui
 -- home page shows scheduled and finished races (current bets, odds, players can be anon, wins)
 -- ability to place bets on scheduled races
@@ -20,3 +21,8 @@ should the organizer?
 you couldn't view it unless you signed a message and were someone who the organizer added
 as an allowed player.
 - could be like smash online where you have to create the room ID but someone could guess it.
+
+//when bets are recorded, is there a way to store them such that I can ask:
+//1. whats the total bet on that winning horse?
+//2. who bet on that horse?
+//3. how much did they bet on that horse? => what is there proportion? 

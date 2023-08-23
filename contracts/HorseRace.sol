@@ -13,6 +13,7 @@ contract RoseDerby {
         uint callerIncentive;
         /// @notice The time (unix timestamp) at which the horses are lined up at the gate and no more bets are allowed.
         uint postTime;
+        uint pool;
         bool finished;
     }
 
@@ -20,19 +21,11 @@ contract RoseDerby {
         address organizer;
     }
 
-    enum Horse { Black, Blue, Green, Red, White, Orange, Purple, Yellow }
-    enum BetType { Win, Place }
+    enum Horse { Black, Blue, Green, Red, White }
 
-    struct Bet {
-        address bettor;
-        Horse horse;
-        BetType betType;
-        uint amount;
-    }
-
-    struct Pool { 
-        Bet[] bets;
-        uint total;
+    struct HorseBetData {
+        uint totalAmountBet;
+        address[] bettors;
     }
 
     event RaceScheduled(
@@ -42,20 +35,22 @@ contract RoseDerby {
     event BetPlaced(
         uint256 index,
         Horse horse,
-        BetType betType,
         uint amount
     );
 
     event RaceResultsDetermined(
          uint256 index, 
-         uint8[8] results
+         uint8[5] results
      );
 
     address public owner;
 
     HorseRace[] public _races;
     PrivateRaceMeta[] private _meta;
-    mapping(uint256 => Pool[2]) private _pools;
+    mapping(uint256 => mapping(Horse => HorseBetData)) private _betDataByHorseByRace;
+    /// @notice Triple nesting to prevent large race results computation.  Results comes down to a particular horse's bettors and totals.
+    mapping(uint256 => mapping(Horse => mapping(address => uint))) private _totalBetByBettorByHorseByRace;
+    mapping(address => uint) private winnings;
 
     constructor() {
         owner = msg.sender;
@@ -84,64 +79,82 @@ contract RoseDerby {
         emit RaceScheduled(_races.length - 1);
     }
 
-    function placeBet(uint256 index, Horse horse, BetType betType) external payable raceExists(index) {
+    function placeBet(uint256 index, Horse horse) external payable raceExists(index) {
         require(block.timestamp <= _races[index].postTime, "Race already started");
         require(msg.value >= 2 ether, "Minimum bet is 2 ROSE");
         
-        _pools[index][uint8(betType)].bets.push(
-            Bet({
-                bettor: msg.sender,
-                betType: betType,
-                amount: msg.value,
-                horse: horse
-            })
-        );
+        _betDataByHorseByRace[index][horse].totalAmountBet += msg.value;
 
-        _pools[index][uint8(betType)].total += msg.value;
+        if (_totalBetByBettorByHorseByRace[index][horse][msg.sender] == 0) {
+            _betDataByHorseByRace[index][horse].bettors.push(msg.sender);
+        }
 
-        emit BetPlaced(index, horse, betType, msg.value);
+        _totalBetByBettorByHorseByRace[index][horse][msg.sender] += msg.value;
+
+        _races[index].pool += msg.value;
+
+        emit BetPlaced(index, horse, msg.value);
     }
 
     function determineResults(uint256 index) external raceExists(index) {
-        require(block.timestamp >= _races[index].postTime, "Race hasn't started");
-        require(!_races[index].finished, "Race results already determined");
+        HorseRace memory race = _races[index];
 
-        bytes memory randomBytes = Sapphire.randomBytes(8, "");
-        uint8[8] memory results = [0, 1, 2, 3, 4, 5, 6, 7];
+        require(block.timestamp >= race.postTime, "Race hasn't started");
+        require(!race.finished, "Race results already determined");
 
-        for (uint i = 0; i < 8; i++) {
-            uint8 randomInt = uint8(bytes1(randomBytes[i])) % 7;
+        bytes memory randomBytes = Sapphire.randomBytes(5, "");
+        uint8[5] memory results = [0, 1, 2, 3, 4];
+
+        for (uint i = 0; i < results.length; i++) {
+            uint8 randomInt = uint8(bytes1(randomBytes[i])) % 4;
             uint8 swap = results[randomInt];
             results[randomInt] = results[i];
             results[i] = swap;
         }
 
-        Horse first = Horse(results[0]);
-        Horse second = Horse(results[1]);
+        Horse winningHorse = Horse(results[0]);
+        HorseBetData memory winningHorseBetData = _betDataByHorseByRace[index][winningHorse];
 
-        uint totalPool = _pools[index][uint8(BetType.Win)].total + _pools[index][uint8(BetType.Place)].total;
-        uint totalTakeout = (OWNER_TAKE + _races[index].take + _races[index].callerIncentive) / 100;
+        uint totalTakeoutPercent = (OWNER_TAKE + race.take + race.callerIncentive) / 100;
 
-        uint ownerTakeout = totalPool * (OWNER_TAKE / 100);
-        uint organizerTakeout = totalPool * (_races[index].take / 100);
-        uint callerIncentiveTakeout = totalPool * (_races[index].callerIncentive / 100);
+        uint ownerTakeout = race.pool * (OWNER_TAKE / 100);
+        winnings[owner] += ownerTakeout;
+        //owner.transfer(ownerTakeout);
 
-        uint winPool = _pools[index][uint8(BetType.Win)].total * (1 - totalTakeout);
-        uint placePool = _pools[index][uint8(BetType.Place)].total * (1 - totalTakeout);
+        uint organizerTakeout = race.pool * (race.take / 100);
+        winnings[_meta[index].organizer] += organizerTakeout;
+        //_meta[index].organizer.transfer(organizerTakeout);
 
-        //compute winning ticket addr payouts.
-        //what percent of the winning horse bets is your bets? you win that much of the pool
-        //total of bets / total winning horse bets = proportion
-        //winnings = proportion * total pool
-    
+        uint callerIncentiveTakeout = race.pool * (race.callerIncentive / 100);
+        winnings[msg.sender] += callerIncentiveTakeout;
+        //msg.sender.transfer(callerIncentiveTakeout);
 
-        //transfer all payouts
+        _races[index].pool = _races[index].pool * (1 - totalTakeoutPercent);
+
+        for (uint i = 0; i < winningHorseBetData.bettors.length; i++) {
+            address winner = winningHorseBetData.bettors[i];
+            uint winnerProportion = _totalBetByBettorByHorseByRace[index][winningHorse][winner] / winningHorseBetData.totalAmountBet;
+            uint prize = winnerProportion * _races[index].pool;
+            //winner.transfer(prize);
+            winnings[winner] += prize;
+        }
 
         _races[index].finished = true;
 
         emit RaceResultsDetermined(index, results);
     }
 
+    function withdraw() public {
+        uint amount = winnings[msg.sender];
+        
+        require(amount > 0, "No funds to withdraw");
+        require(address(this).balance >= amount, "Insufficient contract balance");
+
+        winnings[msg.sender] = 0;
+
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed.");
+    }
     
 }
 
