@@ -2,15 +2,16 @@
 # TODO
 ------------------
 DONE - implement scheduling a race (and getting an id for it..or maybe you create it like in smash)
--- all races are public at first.
+DONE -- all races are public at first.
 DONE - implement placing bets (which tally up odds)
 DONE - implement finishing race (computing winners, payouts)
-- write tests to validate
+- write basic tests to validate all the funcs
 - build ui
 -- home page shows scheduled and finished races (current bets, odds, players can be anon, wins)
 -- ability to place bets on scheduled races
---- start with win only. 4 horses
+--- start with win only. 5 horses
 -- ability to create a race.
+-- may need to add getters for your current bets, balances so you can see what races you're in via msg.sender
 
 # NOTES
 ------------------

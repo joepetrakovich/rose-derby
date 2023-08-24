@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-import "@oasisprotocol/sapphire-contracts/contracts/Sapphire.sol";
+//import "@oasisprotocol/sapphire-contracts/contracts/Sapphire.sol";
 
 contract RoseDerby {
 
@@ -43,7 +43,7 @@ contract RoseDerby {
          uint8[5] results
      );
 
-    address public owner;
+    address private owner;
 
     HorseRace[] public _races;
     PrivateRaceMeta[] private _meta;
@@ -102,7 +102,8 @@ contract RoseDerby {
         require(block.timestamp >= race.postTime, "Race hasn't started");
         require(!race.finished, "Race results already determined");
 
-        bytes memory randomBytes = Sapphire.randomBytes(5, "");
+        //bytes memory randomBytes = Sapphire.randomBytes(5, ""); temporarilty commented out for tests
+        bytes memory randomBytes = "0xc61fadf97c";
         uint8[5] memory results = [0, 1, 2, 3, 4];
 
         for (uint i = 0; i < results.length; i++) {
@@ -115,29 +116,25 @@ contract RoseDerby {
         Horse winningHorse = Horse(results[0]);
         HorseBetData memory winningHorseBetData = _betDataByHorseByRace[index][winningHorse];
 
-        uint totalTakeoutPercent = (OWNER_TAKE + race.take + race.callerIncentive) / 100;
+        winnings[owner] += race.pool * (OWNER_TAKE / 100);
+        winnings[_meta[index].organizer] += race.pool * (race.take / 100);
+        winnings[msg.sender] += race.pool * (race.callerIncentive / 100);
 
-        uint ownerTakeout = race.pool * (OWNER_TAKE / 100);
-        winnings[owner] += ownerTakeout;
-
-        uint organizerTakeout = race.pool * (race.take / 100);
-        winnings[_meta[index].organizer] += organizerTakeout;
-
-        uint callerIncentiveTakeout = race.pool * (race.callerIncentive / 100);
-        winnings[msg.sender] += callerIncentiveTakeout;
-
-        _races[index].pool = _races[index].pool * (1 - totalTakeoutPercent);
+        _races[index].pool = _races[index].pool * (1 - ((OWNER_TAKE + race.take + race.callerIncentive) / 100));
 
         for (uint i = 0; i < winningHorseBetData.bettors.length; i++) {
             address winner = winningHorseBetData.bettors[i];
             uint winnerProportion = _totalBetByBettorByHorseByRace[index][winningHorse][winner] / winningHorseBetData.totalAmountBet;
-            uint prize = winnerProportion * _races[index].pool;
-            winnings[winner] += prize;
+            winnings[winner] += winnerProportion * _races[index].pool;
         }
 
         _races[index].finished = true;
 
         emit RaceResultsDetermined(index, results);
+    }
+
+    function getWinningsBalance() public view returns (uint) {
+      return winnings[msg.sender];
     }
 
     function withdraw() public {
