@@ -63,6 +63,7 @@ contract RoseDerby {
 
     function scheduleRace(uint postTime, uint take, uint callerIncentive) public {
         require(take + callerIncentive + OWNER_TAKE <= 100, "Takeout adds up to more than 100%");
+        require(block.timestamp < postTime, "Post time should be in the future");
 
         HorseRace memory race;
         race.take = take;

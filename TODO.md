@@ -1,4 +1,8 @@
 
+# TODAY
+------------------
+- write tests for placing bets
+
 # TODO
 ------------------
 DONE - implement scheduling a race (and getting an id for it..or maybe you create it like in smash)
@@ -8,6 +12,8 @@ DONE - implement finishing race (computing winners, payouts)
 - write basic tests to validate all the funcs
 - build ui
 -- home page shows scheduled and finished races (current bets, odds, players can be anon, wins)
+--- connect to network ux
+--- 
 -- ability to place bets on scheduled races
 --- start with win only. 5 horses
 -- ability to create a race.

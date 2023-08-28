@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Jazzicon } from 'ethers-svelte/components';
-    import { truncateWithCenterEllipses } from "$lib/StringUtils";
+    import { truncateWithCenterEllipses } from "$lib/Utils";
     import { OASIS_SAPPHIRE_TESTNET, connectWallet, oasisNetworkStatus, signerAddress, switchNetworkOrAddIfNotExists } from "$lib/Network";
     import { OasisNetworkStatus } from '$lib/Models';
 
@@ -23,7 +23,7 @@
     {:else if $oasisNetworkStatus === OasisNetworkStatus.PROVIDER_NOT_FOUND}
         <a href="https://metamask.io/" target="_blank" rel="noreferrer">Install MetaMask</a>
     {:else if $oasisNetworkStatus === OasisNetworkStatus.WALLET_NOT_CONNECTED}
-        <button on:click={handleConnectWallet}>Connect Wallet</button>
+        <button on:click={handleConnectWallet}>Connect</button>
     {:else if $oasisNetworkStatus === OasisNetworkStatus.ON_SAPPHIRE_PARATIME}
         <span title="{$signerAddress}">
             <Jazzicon address="{$signerAddress}" size={32} />
