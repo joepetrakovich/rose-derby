@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-//import "@oasisprotocol/sapphire-contracts/contracts/Sapphire.sol";
+import "@oasisprotocol/sapphire-contracts/contracts/Sapphire.sol";
+import "hardhat/console.sol";
 
 contract RoseDerby {
 
@@ -43,13 +44,13 @@ contract RoseDerby {
          uint8[5] results
      );
 
-    address private owner;
+    address internal owner;
 
     HorseRace[] public _races;
-    PrivateRaceMeta[] private _meta;
-    mapping(uint256 => mapping(Horse => HorseBetData)) private _betDataByHorseByRace;
+    PrivateRaceMeta[] internal _meta;
+    mapping(uint256 => mapping(Horse => HorseBetData)) internal _betDataByHorseByRace;
     /// @notice Triple nesting to prevent large race results computation.  Results comes down to a particular horse's bettors and totals.
-    mapping(uint256 => mapping(Horse => mapping(address => uint))) private _totalBetByBettorByHorseByRace;
+    mapping(uint256 => mapping(Horse => mapping(address => uint))) internal _totalBetByBettorByHorseByRace;
     mapping(address => uint) private winnings;
 
     constructor() {
@@ -61,7 +62,7 @@ contract RoseDerby {
         _;
     }
 
-    function scheduleRace(uint postTime, uint take, uint callerIncentive) public {
+    function scheduleRace(uint postTime, uint take, uint callerIncentive) external {
         require(take + callerIncentive + OWNER_TAKE <= 100, "Takeout adds up to more than 100%");
         require(block.timestamp < postTime, "Post time should be in the future");
 
@@ -97,25 +98,39 @@ contract RoseDerby {
         emit BetPlaced(index, horse, msg.value);
     }
 
+    function getRandomBytes(uint256 count, bytes memory pers) virtual internal view returns (bytes memory) {
+        return Sapphire.randomBytes(count, pers);
+    }
+
     function determineResults(uint256 index) external raceExists(index) {
         HorseRace memory race = _races[index];
 
         require(block.timestamp >= race.postTime, "Race hasn't started");
         require(!race.finished, "Race results already determined");
 
-        //bytes memory randomBytes = Sapphire.randomBytes(5, ""); temporarilty commented out for tests
-        bytes memory randomBytes = "0xc61fadf97c";
+        bytes memory randomBytes = getRandomBytes(5, "");
+
+        console.logBytes(randomBytes);
+
         uint8[5] memory results = [0, 1, 2, 3, 4];
 
         for (uint i = 0; i < results.length; i++) {
-            uint8 randomInt = uint8(bytes1(randomBytes[i])) % 4;
+            uint8 randomInt = uint8(bytes1(randomBytes[i])) % 5;
+            console.log("byte %d: randomInt: %d", i, randomInt);
             uint8 swap = results[randomInt];
             results[randomInt] = results[i];
             results[i] = swap;
         }
 
+        console.log("Results:");
+        for (uint i = 0; i < results.length; i++) {
+            console.log("%d, ", results[i]);
+        }
+
         Horse winningHorse = Horse(results[0]);
         HorseBetData memory winningHorseBetData = _betDataByHorseByRace[index][winningHorse];
+
+        console.log("Winning Horse: %d", results[0]);
 
         winnings[owner] += race.pool * (OWNER_TAKE / 100);
         winnings[_meta[index].organizer] += race.pool * (race.take / 100);
@@ -134,11 +149,11 @@ contract RoseDerby {
         emit RaceResultsDetermined(index, results);
     }
 
-    function getWinningsBalance() public view returns (uint) {
+    function getWinningsBalance() external view returns (uint) {
       return winnings[msg.sender];
     }
 
-    function withdraw() public {
+    function withdraw() external {
         uint amount = winnings[msg.sender];
         
         require(amount > 0, "No funds to withdraw");
