@@ -65,6 +65,15 @@ import {
         const race = await roseDerby._races(0);
         expect(race).to.deep.equal([5, 5, postTime, 0, false]);
       });
+
+      it("Should set the organizer as private race metadata", async () => {
+        const { roseDerbyNonDeterministic, accountTwo, postTime } = await loadFixture(deployRoseDerbyFixture);
+
+        await roseDerbyNonDeterministic.connect(accountTwo).scheduleRace(postTime, 5, 5);
+
+        const meta = await roseDerbyNonDeterministic.getPrivateRaceMetaByHorseRace(0);
+        expect(meta.organizer).to.be.equal(accountTwo.address);
+      });
     });
 
     describe("Placing bets", () => {
@@ -105,19 +114,110 @@ import {
       it("Should increase the total pool by the bet amount", async () => {
         const betAmount = ethers.parseEther('2');
         const { roseDerby, accountTwo } = await loadFixture(deployRoseDerbyFixture);
+        const account = await roseDerby.connect(accountTwo);
 
         const postTime = await time.latest() + 60;
-        await roseDerby.connect(accountTwo)
-          .scheduleRace(postTime, 5, 5);
+        await account.scheduleRace(postTime, 5, 5);
 
         let race = await roseDerby._races(0);
         expect(race.pool).to.equal(0);
 
-        await roseDerby.connect(accountTwo)
-          .placeBet(0, 1, { value: betAmount });
+        await account.placeBet(0, 1, { value: betAmount });
 
         race = await roseDerby._races(0);
         expect(race.pool).to.equal(betAmount);
+      });
+
+      //if (_totalBetByBettorByHorseByRace[index][horse][msg.sender] == 0) {
+      //    _betDataByHorseByRace[index][horse].bettors.push(msg.sender);
+      //}
+
+      //_totalBetByBettorByHorseByRace[index][horse][msg.sender] += msg.value;
+
+      it("Should increase the total amount bet on the horse", async () => {
+        const betAmount = ethers.parseEther('2');
+        const { roseDerbyDeterministic, accountTwo } = await loadFixture(deployRoseDerbyFixture);
+        const account = await roseDerbyDeterministic.connect(accountTwo);
+
+        const postTime = await time.latest() + 60;
+        await account.scheduleRace(postTime, 5, 5);
+
+        let horseZeroBetData = await roseDerbyDeterministic.getBetDataByHorseRaceAndHorse(0, 0);
+        expect(horseZeroBetData.totalAmountBet).to.equal(0);
+
+        let horseOneBetData = await roseDerbyDeterministic.getBetDataByHorseRaceAndHorse(0, 1);
+        expect(horseOneBetData.totalAmountBet).to.equal(0);
+
+        await account.placeBet(0, 0, { value: betAmount });
+        await account.placeBet(0, 0, { value: betAmount });
+        await account.placeBet(0, 1, { value: betAmount });
+
+        horseZeroBetData = await roseDerbyDeterministic.getBetDataByHorseRaceAndHorse(0, 0);
+        expect(horseZeroBetData.totalAmountBet).to.equal(betAmount * BigInt(2));
+
+        horseOneBetData = await roseDerbyDeterministic.getBetDataByHorseRaceAndHorse(0, 1);
+        expect(horseOneBetData.totalAmountBet).to.equal(betAmount);
+      });
+
+      it("Should add a bettor's address to a horse's bettor registry", async () => {
+        const betAmount = ethers.parseEther('2');
+        const { roseDerbyDeterministic, accountTwo } = await loadFixture(deployRoseDerbyFixture);
+        const account = await roseDerbyDeterministic.connect(accountTwo);
+
+        const postTime = await time.latest() + 60;
+        await account.scheduleRace(postTime, 5, 5);
+
+        await account.placeBet(0, 0, { value: betAmount });
+
+        let horseZeroBetData = await roseDerbyDeterministic.getBetDataByHorseRaceAndHorse(0, 0);
+        expect(horseZeroBetData.bettors[0]).to.equal(accountTwo.address);
+      });
+
+      
+      it("Shouldn't add a bettor to a horse's bettor registry more than once", async () => {
+        const betAmount = ethers.parseEther('2');
+        const { roseDerbyDeterministic, accountTwo, accountThree } = await loadFixture(deployRoseDerbyFixture);
+        const account = await roseDerbyDeterministic.connect(accountTwo);
+        const otherAccount = await roseDerbyDeterministic.connect(accountThree);
+
+        const postTime = await time.latest() + 60;
+        await account.scheduleRace(postTime, 5, 5);
+
+        await account.placeBet(0, 0, { value: betAmount });
+        await account.placeBet(0, 0, { value: betAmount });
+        await otherAccount.placeBet(0, 0, { value: betAmount });
+        await otherAccount.placeBet(0, 0, { value: betAmount });
+
+        let horseZeroBetData = await roseDerbyDeterministic.getBetDataByHorseRaceAndHorse(0, 0);
+        expect(horseZeroBetData.bettors[0]).to.equal(accountTwo.address);
+        expect(horseZeroBetData.bettors[1]).to.equal(accountThree.address);
+        expect(horseZeroBetData.bettors.length).to.equal(2);
+      });
+
+      it("Should increase the total amount bet per horse by the bettor", async () => {
+        const betAmount = ethers.parseEther('2');
+        const { roseDerbyDeterministic, accountTwo, accountThree } = await loadFixture(deployRoseDerbyFixture);
+        const account = await roseDerbyDeterministic.connect(accountTwo);
+        const otherAccount = await roseDerbyDeterministic.connect(accountThree);
+
+        const postTime = await time.latest() + 60;
+        await account.scheduleRace(postTime, 5, 5);
+
+        await account.placeBet(0, 0, { value: betAmount });
+        await account.placeBet(0, 0, { value: betAmount });
+        await account.placeBet(0, 0, { value: betAmount });
+        await otherAccount.placeBet(0, 0, { value: betAmount });
+        await otherAccount.placeBet(0, 0, { value: betAmount });
+        await otherAccount.placeBet(0, 1, { value: betAmount });
+
+        const totalBetByAccountTwoOnHorseZero = await roseDerbyDeterministic.getTotalBetByHorseRaceHorseAndBettorAddress(0, 0, accountTwo.address);
+        expect(totalBetByAccountTwoOnHorseZero).to.equal(betAmount * BigInt(3));
+
+        const totalBetByAccountThreeOnHorseZero = await roseDerbyDeterministic.getTotalBetByHorseRaceHorseAndBettorAddress(0, 0, accountThree.address);
+        expect(totalBetByAccountThreeOnHorseZero).to.equal(betAmount * BigInt(2));
+
+        const totalBetByAccountThreeOnHorseOne = await roseDerbyDeterministic.getTotalBetByHorseRaceHorseAndBettorAddress(0, 1, accountThree.address);
+        expect(totalBetByAccountThreeOnHorseOne).to.equal(betAmount);
       });
 
     });
@@ -153,6 +253,40 @@ import {
         await expect(account.determineResults(0)).to.be.revertedWith("Race results already determined");
       });
 
+      // HorseBetData memory winningHorseBetData = _betDataByHorseByRace[index][winningHorse];
+
+      // winnings[owner] += race.pool * (OWNER_TAKE / 100);
+      // winnings[_meta[index].organizer] += race.pool * (race.take / 100);
+      // winnings[msg.sender] += race.pool * (race.callerIncentive / 100);
+
+      // _races[index].pool = _races[index].pool * (1 - ((OWNER_TAKE + race.take + race.callerIncentive) / 100));
+
+      // for (uint i = 0; i < winningHorseBetData.bettors.length; i++) {
+      //     address winner = winningHorseBetData.bettors[i];
+      //     uint winnerProportion = _totalBetByBettorByHorseByRace[index][winningHorse][winner] / winningHorseBetData.totalAmountBet;
+      //     winnings[winner] += winnerProportion * _races[index].pool;
+      // }
+
+      it("Should increase the owner's winnings by the owner take proportion", async () => {
+        expect.fail();
+      });
+
+      it("Should increase the organizer's winnings by the organizer take proportion", async () => {
+        expect.fail();
+      });
+
+      it("Should increase the caller's winnings by the caller incentive proportion", async () => {
+        expect.fail();
+      });
+
+      it("Should increase all the winning address's winnings proportional to the bets on the winning horse", async () => {
+        expect.fail();
+      });
+
+      it("Shouldn't allow negative takes/incentives at all, go back and look at that.", async () => {
+        expect.fail();
+      });
+
       it("Should mark the race as finished", async () => {
         const { roseDerbyNonDeterministic, accountTwo, postTime } = await loadFixture(deployRoseDerbyFixture);
         const account = await roseDerbyNonDeterministic.connect(accountTwo);
@@ -169,7 +303,36 @@ import {
       });
     });
 
-    describe("Withdrawing winnings", () => {});
+    describe("Withdrawing winnings", () => {
+
+      it("Should fail if there aren't any funds to withdraw", async () => {
+        expect.fail();
+      });
+
+      it("Should fail if this contract can't afford the payout", async () => {
+        expect.fail();
+      });
+
+      it("Should zero out their winnings after withdrawal", async () => {
+        expect.fail();
+      });
+
+      it("Should transfer the winnings in ROSE from the contract to the withdrawer", async () => {
+        expect.fail();
+      });
+    //   function withdraw() external {
+    //     uint amount = winnings[msg.sender];
+        
+    //     require(amount > 0, "No funds to withdraw");
+    //     require(address(this).balance >= amount, "Insufficient contract balance");
+
+    //     winnings[msg.sender] = 0;
+
+    //     (bool success, ) = msg.sender.call{value: amount}("");
+    //     require(success, "Transfer failed.");
+    // }
+
+    });
 
     describe("Events", function () {
         it("Should emit a race scheduled event on scheduling", async () => {
@@ -213,6 +376,5 @@ import {
         
       });
 
-      
   });
   

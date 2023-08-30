@@ -2,7 +2,6 @@
 pragma solidity ^0.8.9;
 
 import "@oasisprotocol/sapphire-contracts/contracts/Sapphire.sol";
-import "hardhat/console.sol";
 
 contract RoseDerby {
 
@@ -110,27 +109,17 @@ contract RoseDerby {
 
         bytes memory randomBytes = getRandomBytes(5, "");
 
-        console.logBytes(randomBytes);
-
         uint8[5] memory results = [0, 1, 2, 3, 4];
 
         for (uint i = 0; i < results.length; i++) {
             uint8 randomInt = uint8(bytes1(randomBytes[i])) % 5;
-            console.log("byte %d: randomInt: %d", i, randomInt);
             uint8 swap = results[randomInt];
             results[randomInt] = results[i];
             results[i] = swap;
         }
 
-        console.log("Results:");
-        for (uint i = 0; i < results.length; i++) {
-            console.log("%d, ", results[i]);
-        }
-
         Horse winningHorse = Horse(results[0]);
         HorseBetData memory winningHorseBetData = _betDataByHorseByRace[index][winningHorse];
-
-        console.log("Winning Horse: %d", results[0]);
 
         winnings[owner] += race.pool * (OWNER_TAKE / 100);
         winnings[_meta[index].organizer] += race.pool * (race.take / 100);
