@@ -22,4 +22,10 @@ contract RoseDerbyTestDeterministic is VisibleRoseDerby {
         // 2, 3, 4, 0, 1
         // Winning Horse: 2
     }
+
+    //Test function to aid in simulating insufficient contract funds for winner payouts.
+    function burnBalance() public {
+        address payable burnAddress = payable(0x0000000000000000000000000000000000000000);
+        burnAddress.transfer(address(this).balance);
+    }
 }

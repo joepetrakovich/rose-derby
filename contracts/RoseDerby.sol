@@ -2,6 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "@oasisprotocol/sapphire-contracts/contracts/Sapphire.sol";
+//import "hardhat/console.sol";
 
 contract RoseDerby {
 
@@ -120,17 +121,22 @@ contract RoseDerby {
 
         Horse winningHorse = Horse(results[0]);
         HorseBetData memory winningHorseBetData = _betDataByHorseByRace[index][winningHorse];
+ 
+        winnings[owner] += (race.pool * OWNER_TAKE) / 100;
+        winnings[_meta[index].organizer] += (race.pool * race.take) / 100;
+        winnings[msg.sender] += (race.pool * race.callerIncentive) / 100;
 
-        winnings[owner] += race.pool * (OWNER_TAKE / 100);
-        winnings[_meta[index].organizer] += race.pool * (race.take / 100);
-        winnings[msg.sender] += race.pool * (race.callerIncentive / 100);
-
-        _races[index].pool = _races[index].pool * (1 - ((OWNER_TAKE + race.take + race.callerIncentive) / 100));
+        //_races[index].pool = (_races[index].pool * (100 - (OWNER_TAKE + race.take + race.callerIncentive))) / 100;
+        uint poolAfterTakeout = (_races[index].pool * (100 - (OWNER_TAKE + race.take + race.callerIncentive))) / 100;
 
         for (uint i = 0; i < winningHorseBetData.bettors.length; i++) {
             address winner = winningHorseBetData.bettors[i];
-            uint winnerProportion = _totalBetByBettorByHorseByRace[index][winningHorse][winner] / winningHorseBetData.totalAmountBet;
-            winnings[winner] += winnerProportion * _races[index].pool;
+            uint winnerTotalBetOnWinningHorse = _totalBetByBettorByHorseByRace[index][winningHorse][winner];
+            winnings[winner] += (poolAfterTakeout * winnerTotalBetOnWinningHorse) / winningHorseBetData.totalAmountBet;
+        }
+
+        if (winningHorseBetData.bettors.length == 0) {
+            winnings[owner] += poolAfterTakeout;
         }
 
         _races[index].finished = true;
