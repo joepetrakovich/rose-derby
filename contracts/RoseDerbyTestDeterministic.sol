@@ -9,18 +9,20 @@ import "hardhat/console.sol";
 contract RoseDerbyTestDeterministic is VisibleRoseDerby {
 
     function getRandomBytes(uint256, bytes memory) internal override pure returns (bytes memory) {
-        bytes memory notRandomBytes = "0xd1bc0f12ee";
+        bytes memory notRandomBytes = "0x3078353436333633";
         return notRandomBytes;
 
-        // 0xd1bc0f12ee
-        // byte 0: randomInt: 4
-        // byte 1: randomInt: 3
-        // byte 2: randomInt: 0
-        // byte 3: randomInt: 3
-        // byte 4: randomInt: 3
-        // Results of shuffle:
-        // 2, 3, 4, 0, 1
-        // Winning Horse: 2
+        // 0x3078353436333633
+        // byte 0: randomInt: 0
+        // byte 1: randomInt: 0
+        // byte 2: randomInt: 3
+        // byte 3: randomInt: 0
+        // byte 4: randomInt: 7
+        // byte 5: randomInt: 0
+        // byte 6: randomInt: 3
+        // byte 7: randomInt: 5
+        // 5,0,3,6,7,4,1,2
+        // Winning horse: 5
     }
 
     //Test function to aid in simulating insufficient contract funds for winner payouts.

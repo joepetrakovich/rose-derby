@@ -2,13 +2,14 @@
 pragma solidity ^0.8.9;
 
 import "@oasisprotocol/sapphire-contracts/contracts/Sapphire.sol";
+import "hardhat/console.sol";
 
 contract RoseDerby {
 
-    uint public constant OWNER_TAKE = 2;
-    uint private constant NUM_HORSES = 5;
+    uint8 public constant OWNER_TAKE = 2;
+    uint8 private constant NUM_HORSES = 8;
 
-    enum Horse { Black, Blue, Green, Red, White }
+    enum Horse { Black, Blue, Green, Pink, Purple, Red, White, Yellow }
 
     struct Race {
         uint take;
@@ -41,7 +42,7 @@ contract RoseDerby {
 
     event RaceResultsDetermined(
          uint256 index, 
-         uint8[5] results
+         uint8[NUM_HORSES] results
      );
 
     address internal owner;
@@ -108,12 +109,12 @@ contract RoseDerby {
         require(block.timestamp >= race.postTime, "Race hasn't started");
         require(!race.finished, "Race results already determined");
 
-        bytes memory randomBytes = getRandomBytes(5, "");
+        bytes memory randomBytes = getRandomBytes(NUM_HORSES, "");
 
-        uint8[5] memory results = [0, 1, 2, 3, 4];
+        uint8[NUM_HORSES] memory results = [0, 1, 2, 3, 4, 5, 6, 7];
 
         for (uint i = 0; i < results.length; i++) {
-            uint8 randomInt = uint8(bytes1(randomBytes[i])) % 5;
+            uint8 randomInt = uint8(bytes1(randomBytes[i])) % NUM_HORSES;
             uint8 swap = results[randomInt];
             results[randomInt] = results[i];
             results[i] = swap;

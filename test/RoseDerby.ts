@@ -255,7 +255,7 @@ import {
         const account = await roseDerbyDeterministic.connect(accountTwo);
 
         await account.scheduleRace(postTime, 5, 5);
-        await account.placeBet(0, 2, { value: betAmount });
+        await account.placeBet(0, 5, { value: betAmount });
         
         const race = await roseDerbyDeterministic._races(0);
         expect(race.pool).to.equal(betAmount);
@@ -276,7 +276,7 @@ import {
         const organizer = await roseDerbyDeterministic.connect(accountTwo);
         const organizerTake = 5;
         await organizer.scheduleRace(postTime, organizerTake, 0);
-        //don't bet on winning horse (2) so organizer loses
+        //don't bet on winning horse (5) so organizer loses
         await organizer.placeBet(0, 0, { value: betAmount }); 
         
         const race = await roseDerbyDeterministic._races(0);
@@ -326,8 +326,8 @@ import {
         
         await organizer.scheduleRace(postTime, organizerTake, callerIncentive);
         await organizer.placeBet(0, 0, { value: betAmount }); 
-        await winningBettor.placeBet(0, 2, { value: betAmount }); 
-        await winningBettor2x.placeBet(0, 2, { value: betAmount * BigInt(2) }); 
+        await winningBettor.placeBet(0, 5, { value: betAmount }); 
+        await winningBettor2x.placeBet(0, 5, { value: betAmount * BigInt(2) }); 
         
         const race = await roseDerbyDeterministic._races(0);
         expect(race.pool).to.equal(betAmount * BigInt(4));
@@ -337,12 +337,12 @@ import {
 
         const poolAfterTakeout = (race.pool * (BigInt(100) - (BigInt(organizerTake) + BigInt(callerIncentive) + BigInt(ownerTake)))) / BigInt(100);
 
-        const winningHorseBetData = await roseDerbyDeterministic.getBetDataByHorseRaceAndHorse(0, 2);
+        const winningHorseBetData = await roseDerbyDeterministic.getBetDataByHorseRaceAndHorse(0, 5);
         expect(winningHorseBetData.totalAmountBet).to.equal(betAmount * BigInt(3));
 
         //1x bettor should get 1/3rd of pot.
 
-        const winningBettorTotalAmountBet = await roseDerbyDeterministic.getTotalBetByHorseRaceHorseAndBettorAddress(0, 2, accountThree.address);
+        const winningBettorTotalAmountBet = await roseDerbyDeterministic.getTotalBetByHorseRaceHorseAndBettorAddress(0, 5, accountThree.address);
         expect(winningBettorTotalAmountBet).to.equal(betAmount);
 
         const winningBettorExpectedWinnings = (poolAfterTakeout * winningBettorTotalAmountBet) / winningHorseBetData.totalAmountBet;
@@ -352,7 +352,7 @@ import {
 
         //2x bettor should get 2/3rds of pot.
         
-        const winningBettor2xTotalAmountBet = await roseDerbyDeterministic.getTotalBetByHorseRaceHorseAndBettorAddress(0, 2, accountFour.address);
+        const winningBettor2xTotalAmountBet = await roseDerbyDeterministic.getTotalBetByHorseRaceHorseAndBettorAddress(0, 5, accountFour.address);
         expect(winningBettor2xTotalAmountBet).to.equal(betAmount * BigInt(2));
 
         const winningBettor2xExpectedWinnings = (poolAfterTakeout * winningBettor2xTotalAmountBet) / winningHorseBetData.totalAmountBet;
@@ -373,7 +373,7 @@ import {
         
         await organizer.scheduleRace(postTime, organizerTake, callerIncentive);
         await organizer.placeBet(0, 0, { value: betAmount }); 
-        await winningBettor.placeBet(0, 2, { value: betAmount }); 
+        await winningBettor.placeBet(0, 5, { value: betAmount }); 
         
         const race = await roseDerbyDeterministic._races(0);
         expect(race.pool).to.equal(betAmount * BigInt(2));
@@ -451,7 +451,7 @@ import {
 
       it("Should fail if this contract can't afford the payout", async () => {
         const betAmount = ethers.parseEther('2');
-        const { roseDerbyDeterministic, postTime, owner, accountTwo } = await loadFixture(deployRoseDerbyFixture);
+        const { roseDerbyDeterministic, postTime, accountTwo } = await loadFixture(deployRoseDerbyFixture);
         const organizer = await roseDerbyDeterministic.connect(accountTwo);
         const organizerTake = 2
         
