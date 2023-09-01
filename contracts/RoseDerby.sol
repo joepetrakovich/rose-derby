@@ -2,7 +2,6 @@
 pragma solidity ^0.8.9;
 
 import "@oasisprotocol/sapphire-contracts/contracts/Sapphire.sol";
-//import "hardhat/console.sol";
 
 contract RoseDerby {
 
@@ -126,7 +125,6 @@ contract RoseDerby {
         winnings[_meta[index].organizer] += (race.pool * race.take) / 100;
         winnings[msg.sender] += (race.pool * race.callerIncentive) / 100;
 
-        //_races[index].pool = (_races[index].pool * (100 - (OWNER_TAKE + race.take + race.callerIncentive))) / 100;
         uint poolAfterTakeout = (_races[index].pool * (100 - (OWNER_TAKE + race.take + race.callerIncentive))) / 100;
 
         for (uint i = 0; i < winningHorseBetData.bettors.length; i++) {

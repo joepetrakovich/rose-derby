@@ -2,7 +2,6 @@
 pragma solidity ^0.8.9;
 
 import "./VisibleRoseDerby.sol";
-import "hardhat/console.sol";
 
 // Overrides Sapphire's getRandomBytes with a good-enough-for-testing RNG function
 // so hardhat network can be used for fast unit-tests.

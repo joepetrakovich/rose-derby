@@ -265,7 +265,6 @@ import {
 
         const expected = (race.pool * ownerTake) / BigInt(100);
         const actual = await ownerAccount.getWinningsBalance();
-        console.log("Expected %d, Actual %d", expected, actual);
 
         expect(actual).to.be.greaterThan(0);
         expect(actual).to.be.equal(expected);
@@ -288,7 +287,6 @@ import {
 
         const expected = (race.pool * BigInt(organizerTake)) / BigInt(100);
         const actual = await organizer.getWinningsBalance();
-        console.log("Expected %d, Actual %d", expected, actual);
 
         expect(actual).to.be.greaterThan(0);
         expect(actual).to.be.equal(expected);
@@ -312,7 +310,6 @@ import {
 
         const expected = (race.pool * BigInt(callerIncentive)) / BigInt(100);
         const actual = await raceCaller.getWinningsBalance();
-        console.log("Expected %d, Actual %d", expected, actual);
 
         expect(actual).to.be.greaterThan(0);
         expect(actual).to.be.equal(expected);
@@ -334,13 +331,11 @@ import {
         
         const race = await roseDerbyDeterministic._races(0);
         expect(race.pool).to.equal(betAmount * BigInt(4));
-        console.log("Total pool:", race.pool);
         
         await time.increaseTo(postTime);
         await organizer.determineResults(0);
 
         const poolAfterTakeout = (race.pool * (BigInt(100) - (BigInt(organizerTake) + BigInt(callerIncentive) + BigInt(ownerTake)))) / BigInt(100);
-        console.log("Pool after takeout: ", poolAfterTakeout);
 
         const winningHorseBetData = await roseDerbyDeterministic.getBetDataByHorseRaceAndHorse(0, 2);
         expect(winningHorseBetData.totalAmountBet).to.equal(betAmount * BigInt(3));
@@ -352,7 +347,6 @@ import {
 
         const winningBettorExpectedWinnings = (poolAfterTakeout * winningBettorTotalAmountBet) / winningHorseBetData.totalAmountBet;
         const winningBettorActualWinnings = await winningBettor.getWinningsBalance();
-        console.log("Expected %d, Actual %d", winningBettorExpectedWinnings, winningBettorActualWinnings);
 
         expect(winningBettorActualWinnings).to.be.equal(winningBettorExpectedWinnings);
 
@@ -363,7 +357,6 @@ import {
 
         const winningBettor2xExpectedWinnings = (poolAfterTakeout * winningBettor2xTotalAmountBet) / winningHorseBetData.totalAmountBet;
         const winningBettor2xActualWinnings = await winningBettor2x.getWinningsBalance();
-        console.log("Expected %d, Actual %d", winningBettor2xExpectedWinnings, winningBettor2xActualWinnings);
 
         expect(winningBettor2xActualWinnings).to.be.equal(winningBettor2xExpectedWinnings);
       });
@@ -384,13 +377,11 @@ import {
         
         const race = await roseDerbyDeterministic._races(0);
         expect(race.pool).to.equal(betAmount * BigInt(2));
-        console.log("Total pool:", race.pool);
         
         await time.increaseTo(postTime);
         await raceCaller.determineResults(0);
 
         const poolAfterTakeout = (race.pool * (BigInt(100) - (BigInt(organizerTake) + BigInt(callerIncentive) + BigInt(ownerTake)))) / BigInt(100);
-        console.log("Pool after takeout: ", poolAfterTakeout);
 
         const expectedOwnerWinnings = (race.pool * BigInt(ownerTake)) / BigInt(100);
         const expectedOrganizerWinnings = (race.pool * BigInt(organizerTake)) / BigInt(100);
@@ -417,13 +408,11 @@ import {
         
         const race = await roseDerbyDeterministic._races(0);
         expect(race.pool).to.equal(betAmount);
-        console.log("Total pool:", race.pool);
         
         await time.increaseTo(postTime);
         await organizer.determineResults(0);
 
         const poolAfterTakeout = (race.pool * (BigInt(100) - (BigInt(organizerTake) + BigInt(ownerTake)))) / BigInt(100);
-        console.log("Pool after takeout: ", poolAfterTakeout);
 
         const expectedOwnerTakeout = (race.pool * BigInt(ownerTake)) / BigInt(100);
         const expectedOrganizerTakeout = (race.pool * BigInt(organizerTake)) / BigInt(100);
