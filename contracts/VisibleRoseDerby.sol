@@ -14,11 +14,11 @@ abstract contract VisibleRoseDerby is RoseDerby {
         return _meta[index];
     }
 
-    function getBetDataByHorseRaceAndHorse(uint256 index, Horse horse) public view returns (HorseBetData memory) {
-        return _betDataByHorseByRace[index][horse];
+    function getBetDataByHorseRaceAndHorse(uint256 index, Horse horse) public view returns (BetData memory) {
+        return _betDataByHorseByRace[index][uint8(horse)];
     }
 
     function getTotalBetByHorseRaceHorseAndBettorAddress(uint256 index, Horse horse, address bettorAddress) public view returns (uint) {
-        return _totalBetByBettorByHorseByRace[index][horse][bettorAddress];
+        return _totalBetByBettorByHorseByRace[index][uint8(horse)][bettorAddress];
     }
 }
