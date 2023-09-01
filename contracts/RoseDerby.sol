@@ -6,8 +6,11 @@ import "@oasisprotocol/sapphire-contracts/contracts/Sapphire.sol";
 contract RoseDerby {
 
     uint public constant OWNER_TAKE = 2;
+    uint private constant NUM_HORSES = 5;
 
-    struct HorseRace {
+    enum Horse { Black, Blue, Green, Red, White }
+
+    struct Race {
         uint take;
          /// @notice The optional incentive (a percentage from each pool) awarded to the address that pays for the results computation on a race.
         uint callerIncentive;
@@ -21,9 +24,7 @@ contract RoseDerby {
         address organizer;
     }
 
-    enum Horse { Black, Blue, Green, Red, White }
-
-    struct HorseBetData {
+    struct BetData {
         uint totalAmountBet;
         address[] bettors;
     }
@@ -45,11 +46,10 @@ contract RoseDerby {
 
     address internal owner;
 
-    HorseRace[] public _races;
+    Race[] public _races;
     PrivateRaceMeta[] internal _meta;
-    mapping(uint256 => mapping(Horse => HorseBetData)) internal _betDataByHorseByRace;
-    /// @notice Triple nesting to prevent large race results computation.  Results comes down to a particular horse's bettors and totals.
-    mapping(uint256 => mapping(Horse => mapping(address => uint))) internal _totalBetByBettorByHorseByRace;
+    mapping(uint256 => BetData[NUM_HORSES]) internal _betDataByHorseByRace;
+    mapping(uint256 => mapping(address => uint)[NUM_HORSES]) internal _totalBetByBettorByHorseByRace;
     mapping(address => uint) private winnings;
 
     constructor() {
@@ -65,7 +65,7 @@ contract RoseDerby {
         require(take + callerIncentive + OWNER_TAKE <= 100, "Takeout adds up to more than 100%");
         require(block.timestamp < postTime, "Post time should be in the future");
 
-        HorseRace memory race;
+        Race memory race;
         race.take = take;
         race.callerIncentive = callerIncentive;
         race.postTime = postTime;
@@ -84,13 +84,14 @@ contract RoseDerby {
         require(block.timestamp <= _races[index].postTime, "Race already started");
         require(msg.value >= 2 ether, "Minimum bet is 2 ROSE");
         
-        _betDataByHorseByRace[index][horse].totalAmountBet += msg.value;
+        uint8 horseNum = uint8(horse);
+        _betDataByHorseByRace[index][horseNum].totalAmountBet += msg.value;
 
-        if (_totalBetByBettorByHorseByRace[index][horse][msg.sender] == 0) {
-            _betDataByHorseByRace[index][horse].bettors.push(msg.sender);
+        if (_totalBetByBettorByHorseByRace[index][horseNum][msg.sender] == 0) {
+            _betDataByHorseByRace[index][horseNum].bettors.push(msg.sender);
         }
 
-        _totalBetByBettorByHorseByRace[index][horse][msg.sender] += msg.value;
+        _totalBetByBettorByHorseByRace[index][horseNum][msg.sender] += msg.value;
 
         _races[index].pool += msg.value;
 
@@ -102,7 +103,7 @@ contract RoseDerby {
     }
 
     function determineResults(uint256 index) external raceExists(index) {
-        HorseRace memory race = _races[index];
+        Race memory race = _races[index];
 
         require(block.timestamp >= race.postTime, "Race hasn't started");
         require(!race.finished, "Race results already determined");
@@ -118,8 +119,8 @@ contract RoseDerby {
             results[i] = swap;
         }
 
-        Horse winningHorse = Horse(results[0]);
-        HorseBetData memory winningHorseBetData = _betDataByHorseByRace[index][winningHorse];
+        uint8 winningHorseNum = results[0];
+        BetData memory winningHorseBetData = _betDataByHorseByRace[index][winningHorseNum];
  
         winnings[owner] += (race.pool * OWNER_TAKE) / 100;
         winnings[_meta[index].organizer] += (race.pool * race.take) / 100;
@@ -129,7 +130,7 @@ contract RoseDerby {
 
         for (uint i = 0; i < winningHorseBetData.bettors.length; i++) {
             address winner = winningHorseBetData.bettors[i];
-            uint winnerTotalBetOnWinningHorse = _totalBetByBettorByHorseByRace[index][winningHorse][winner];
+            uint winnerTotalBetOnWinningHorse = _totalBetByBettorByHorseByRace[index][winningHorseNum][winner];
             winnings[winner] += (poolAfterTakeout * winnerTotalBetOnWinningHorse) / winningHorseBetData.totalAmountBet;
         }
 
