@@ -1,18 +1,21 @@
-<script>
-    import logo from "$lib/images/rose-derby-logo.png";
+<script lang="ts">
     import horses from "$lib/images/horses.svg";
     import WalletConnection from "./WalletConnection.svelte";
+    import { roseDerbyContract } from "$lib/Stores";
+
+    let winnings: Number = 0;
+
+    const handleRefreshWinnings = async () => {
+        $roseDerbyContract?.getWinningsBalance()
+            .then(amount => {winnings = amount; console.log("latest winnings: %d", amount);})
+            .catch(error => console.log(error));
+    }
 </script>
 
 <nav>
-    <a href="/">
-        <!-- <img src={logo} alt="Rose Derby Logo" height="128px" width="128" /> -->
-        Rose Derby
-    </a>
-
-    <img src={horses} alt="Three horses" />
-
+    <a href="/"> Rose Derby <img src={horses} alt="Three horses" /></a>
     <WalletConnection class="wallet-connect" />
+    Winnings: {winnings} <button on:click={handleRefreshWinnings}>Refresh</button>
 </nav>
 
 <style>

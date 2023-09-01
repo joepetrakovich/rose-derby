@@ -1,4 +1,4 @@
-import '@oasisprotocol/sapphire-hardhat';
+//import '@oasisprotocol/sapphire-hardhat';
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 
@@ -9,12 +9,12 @@ const config: HardhatUserConfig = {
   networks: {
         sapphire_localnet: {
             url: "http://localhost:8545/",
-            accounts: process.env.PRIVATE_KEYS?.split(','),
+            accounts: process.env.SAPPHIRE_LOCALNET_PRIVATE_KEYS?.split(','),
             chainId: 0x5afd
          },
          sapphire_testnet: {
           url: "https://testnet.sapphire.oasis.dev",
-          accounts: process.env.PRIVATE_KEYS?.split(','),
+          accounts: process.env.SAPPHIRE_TESTNET_PRIVATE_KEYS?.split(','),
           chainId: 0x5aff,
         }
   },

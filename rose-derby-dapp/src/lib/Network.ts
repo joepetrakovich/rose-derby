@@ -1,7 +1,6 @@
 import { type Network, OasisNetworkStatus } from "./Models";
 import MetaMaskOnBoarding from '@metamask/onboarding';
-import { ethers } from 'ethers';
-import { readable, type Readable } from 'svelte/store';
+import { ethers } from "ethers";
 
 const SWITCH_CHAIN_ERROR_CHAIN_NOT_ADDED: number = 4902;
 const UNRECOGNIZED_CHAIN_ERROR: number = -32603;
@@ -64,7 +63,7 @@ export const OASIS_SAPPHIRE_TESTNET: Network = {
     });
 }
 
-async function getOasisNetworkConnectionStatus(): Promise<OasisNetworkStatus> {
+export async function getOasisNetworkConnectionStatus(): Promise<OasisNetworkStatus> {
     try {    
         if (!MetaMaskOnBoarding.isMetaMaskInstalled()) {
             return OasisNetworkStatus.PROVIDER_NOT_FOUND;
@@ -88,36 +87,3 @@ async function getOasisNetworkConnectionStatus(): Promise<OasisNetworkStatus> {
         return OasisNetworkStatus.PROVIDER_NOT_FOUND;
     }
 }
-
-function createOasisNetworkWatcherStore(): Readable<OasisNetworkStatus> {
-    const store = readable<OasisNetworkStatus>(OasisNetworkStatus.INITIALIZING, set => {
-
-        const interval = setInterval(async () => {
-            const status = await getOasisNetworkConnectionStatus();
-            console.log("status: " + status);
-            set(status);
-        }, 1000);
-
-        return () => clearInterval(interval); 
-    });
-
-    return store;
-}
-
-function createAccountWatcherStore(): Readable<string> {
-    const store = readable<string>('', set => {
-
-        const interval = setInterval(async () => {
-            if (window.ethereum) {
-                set(window.ethereum.selectedAddress);
-            }
-        }, 1000);
-
-        return () => clearInterval(interval); 
-    });
-
-    return store;
-}
-
-export const oasisNetworkStatus = createOasisNetworkWatcherStore();
-export const signerAddress = createAccountWatcherStore();

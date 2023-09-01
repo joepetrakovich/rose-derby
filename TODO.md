@@ -1,7 +1,6 @@
 
 # TODAY
 ------------------
-- write tests for placing bets
 
 # TODO
 ------------------
@@ -9,11 +8,12 @@ DONE - implement scheduling a race (and getting an id for it..or maybe you creat
 DONE -- all races are public at first.
 DONE - implement placing bets (which tally up odds)
 DONE - implement finishing race (computing winners, payouts)
-- write basic tests to validate all the funcs
+DONE - write basic tests to validate all the funcs
+DONE - verify on sourcify (0x4a797b122dF28E3782Bbb7ccA31a802F11B96f75)
+
 - build ui
 -- home page shows scheduled and finished races (current bets, odds, players can be anon, wins)
 --- connect to network ux
---- 
 -- ability to place bets on scheduled races
 --- start with win only. 5 horses
 -- ability to create a race.

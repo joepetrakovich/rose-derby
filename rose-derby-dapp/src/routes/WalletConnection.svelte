@@ -1,8 +1,9 @@
 <script lang="ts">
     import { Jazzicon } from 'ethers-svelte/components';
     import { truncateWithCenterEllipses } from "$lib/Utils";
-    import { OASIS_SAPPHIRE_TESTNET, connectWallet, oasisNetworkStatus, signerAddress, switchNetworkOrAddIfNotExists } from "$lib/Network";
+    import { OASIS_SAPPHIRE_TESTNET, connectWallet, switchNetworkOrAddIfNotExists } from "$lib/Network";
     import { OasisNetworkStatus } from '$lib/Models';
+    import { oasisNetworkStatus, signerAddress } from '$lib/Stores';
 
     let classes: string;
     export { classes as class };

@@ -22,6 +22,7 @@
 	"dependencies": {
 		"@metamask/jazzicon": "^2.0.0",
 		"@metamask/onboarding": "^1.0.1",
+		"@oasisprotocol/sapphire-paratime": "^1.1.1",
 		"ethers-svelte": "^3.2.0"
 	}
 }
