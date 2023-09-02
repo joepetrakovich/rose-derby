@@ -61,6 +61,15 @@ contract RoseDerby {
         _;
     }
 
+
+    function getRaces() external view returns (Race[] memory) {
+      return _races;
+    }
+
+    function getWinningsBalance() external view returns (uint) {
+      return winnings[msg.sender];
+    }
+
     function scheduleRace(uint postTime, uint take, uint callerIncentive) external {
         require(take + callerIncentive + OWNER_TAKE <= 100, "Takeout adds up to more than 100%");
         require(block.timestamp < postTime, "Post time should be in the future");
@@ -141,10 +150,6 @@ contract RoseDerby {
         _races[index].finished = true;
 
         emit RaceResultsDetermined(index, results);
-    }
-
-    function getWinningsBalance() external view returns (uint) {
-      return winnings[msg.sender];
     }
 
     function withdraw() external {

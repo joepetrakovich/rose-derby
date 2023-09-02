@@ -67,6 +67,17 @@ import {
         expect(race).to.deep.equal([5, 5, postTime, 0, false]);
       });
 
+      it("Should allow you to query all races", async () => {
+        const { roseDerby, accountTwo, postTime } = await loadFixture(deployRoseDerbyFixture);
+
+        await roseDerby.connect(accountTwo).scheduleRace(postTime, 5, 5);
+
+        const races = await roseDerby.getRaces();
+
+        expect(races).to.be.a("Array");
+        expect(races.length).to.equal(1);
+      });
+
       it("Should set the organizer as private race metadata", async () => {
         const { roseDerbyNonDeterministic, accountTwo, postTime } = await loadFixture(deployRoseDerbyFixture);
 

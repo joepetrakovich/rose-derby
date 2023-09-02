@@ -9,7 +9,9 @@ DONE -- all races are public at first.
 DONE - implement placing bets (which tally up odds)
 DONE - implement finishing race (computing winners, payouts)
 DONE - write basic tests to validate all the funcs
-DONE - verify on sourcify (0x4a797b122dF28E3782Bbb7ccA31a802F11B96f75)
+
+Deloying the contracts with the account: 0x1Bca6F7bb997Bb9aE3164bB61a468F2a86893A30
+Rose Derby deployed to 0x4232017dBad2B11B6E5c073a33C6aF0d36Abb2d9
 
 - build ui
 -- home page shows scheduled and finished races (current bets, odds, players can be anon, wins)

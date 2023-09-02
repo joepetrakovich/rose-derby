@@ -43,3 +43,14 @@ export const roseDerbyContract: Readable<ethers.Contract|undefined> = derived([o
         set(undefined);
     }
 });
+
+export const roseDerbyContractUnsigned: Readable<ethers.Contract|undefined> = derived([oasisNetworkStatus, signerAddress], ([$networkStatus], set) => {
+    if ($networkStatus == OasisNetworkStatus.ON_SAPPHIRE_PARATIME) {
+        set(new ethers.Contract(
+            contractAddress.RoseDerby,
+            RoseDerbyArtifact.abi,
+            sapphire.wrap(new ethers.BrowserProvider(window.ethereum))));
+    } else {
+        set(undefined);
+    }
+});

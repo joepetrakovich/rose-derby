@@ -1,8 +1,17 @@
+<script lang="ts">
+    import CreateRace from './CreateRace.svelte';
+    import RaceList from './RaceList.svelte';
+ 
+</script>
 
 <div class="container">
-    <div class="create-race"></div>
+    <div class="create-race">
+        <CreateRace />   
+    </div>
     <div class="find-existing"></div>
-    <div class="scheduled-and-finished-races"></div>
+    <div class="scheduled-and-finished-races">
+       <RaceList />
+    </div>
 </div>
 
 <style>
@@ -13,10 +22,8 @@
     }
 
     .create-race,
-    .find-existing,
-    .scheduled-and-finished-races {
+    .find-existing {
         border: 1px solid black;
-        height: 200px;
-        width: 200px;
+        min-width: 200px;
     }
 </style>
