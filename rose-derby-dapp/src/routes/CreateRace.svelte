@@ -1,49 +1,55 @@
 <script lang="ts">
-    import { OasisNetworkStatus } from "$lib/Models";
-    import { oasisNetworkStatus, roseDerbyContract } from "$lib/Stores";
+    import { connectedToSapphire, roseDerbyContract } from "$lib/Stores";
+    import TransactionPending from "$lib/TransactionPending.svelte";
 
     let postTime: Date;
-    let take: number;
-    let callerIncentive: number;
-
+    let take: number = 0;
+    let callerIncentive: number = 0;
+    let submitting: boolean;
+    $: disabled = submitting || !postTime || !$connectedToSapphire;
+  
     const today: string = new Date().toISOString().split("T")[0];
 
     let tx: Promise<any>;
-    const handleCreateRace = () => {
-        const postTimeSeconds = Math.floor(new Date(postTime).getTime() / 1000);
-        $roseDerbyContract?.scheduleRace(postTimeSeconds, take, callerIncentive, { gasLimit: 400000 })
-        .then(transaction => {
-            console.log("sent tx: ", transaction);
-            tx = transaction.wait();
-        })
-        .catch(console.log);
+    const handleSubmit = (event: Event) => {
+        submitting = true;
+        $roseDerbyContract
+            ?.scheduleRace(Math.floor(new Date(postTime).getTime() / 1000), take, callerIncentive, { gasLimit: 400000 })
+            .then(transaction => {
+                tx = transaction.wait();
+                (event.target as HTMLFormElement).reset();
+            })
+            .catch(console.log)
+            .finally(() => submitting = false)
     }
 </script>
 
-<div class="container">
+<form on:submit|preventDefault={handleSubmit}>
     <div class="field">
         <label for="postTime">Post Time:</label>
-        <input id="postTime" type="date" min={today} bind:value={postTime}  />
+        <input id="postTime" placeholder="Post Time" type="datetime-local" min={today} required bind:value={postTime}  />
     </div>
     <div class="field">
         <label for="take">Take:</label>
-        <input id="take" type="number" min=0 max=100 bind:value={take} />
+        <input id="take" type="number" min=0 max=100 required bind:value={take} />
     </div>
     <div class="field">
         <label for="callerIncentive">Caller Incentive:</label>
-        <input id="callerIncentive" type="number" min=0 max=100 bind:value={callerIncentive} />
+        <input id="callerIncentive" type="number" min=0 max=100 required bind:value={callerIncentive} />
     </div>
-    <button disabled={!postTime || $oasisNetworkStatus != OasisNetworkStatus.ON_SAPPHIRE_PARATIME} on:click={handleCreateRace}>Create Race</button>
-    {#await tx}<small>Transaction pending...</small>{/await}
-</div>
+    <button {disabled}>Create Race</button>
+    <TransactionPending {tx} />
+</form>
 
 <style>
-    .container {
+    form {
         display: flex;
         flex-direction: column;
     }
-    small {
-        color: gray;
-        font-style: italic;
+    .field {
+        display: flex;
+    }
+    .field label, .field input {
+        width: 50%;
     }
 </style>

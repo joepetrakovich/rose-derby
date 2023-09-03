@@ -17,6 +17,8 @@ export const oasisNetworkStatus = readable<OasisNetworkStatus>(OasisNetworkStatu
     }
 });
 
+export const connectedToSapphire: Readable<boolean> = derived(oasisNetworkStatus, ($oasisNetworkStatus) => $oasisNetworkStatus == OasisNetworkStatus.ON_SAPPHIRE_PARATIME);
+
 export const signerAddress = readable<string>('', set => {
     const interval = setInterval(async () => {
         if (window.ethereum) {
@@ -52,5 +54,27 @@ export const roseDerbyContractUnsigned: Readable<ethers.Contract|undefined> = de
             sapphire.wrap(new ethers.BrowserProvider(window.ethereum))));
     } else {
         set(undefined);
+    }
+});
+
+export const lastKnownBlockTimestamp: Readable<Date|undefined> = derived(oasisNetworkStatus, ($networkStatus, set) => {
+    const interval = setInterval(async () => {
+        if ($networkStatus == OasisNetworkStatus.ON_SAPPHIRE_PARATIME) {
+            const provider = sapphire.wrap(new ethers.BrowserProvider(window.ethereum));
+            provider.getBlockNumber()
+            .then(provider.getBlock)
+            .then(block => {
+                if (block) {
+                    set(new Date(block.timestamp * 1000));
+                }
+            })
+            .catch(console.log);
+        } else {
+            set(undefined);
+        }
+    }, 1000);
+
+    return function stop() {
+        clearInterval(interval); 
     }
 });

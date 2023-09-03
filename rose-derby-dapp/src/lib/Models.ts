@@ -20,3 +20,19 @@ export enum OasisNetworkStatus {
     ON_DIFFERENT_NETWORK, 
     ON_SAPPHIRE_PARATIME
 };
+
+export interface Race {
+    take: bigint;
+    callerIncentive: bigint;
+    postTime: bigint;
+    pool: bigint;
+    finished: boolean;
+  }
+
+export enum Horse { Black = 0, Blue = 1, Green = 2, Red = 3, White = 4 }
+
+export const Events = { 
+    RaceScheduled: "RaceScheduled",
+    BetPlaced: "BetPlaced", 
+    RaceResultsDetermined: "RaceResultsDetermined"
+ }

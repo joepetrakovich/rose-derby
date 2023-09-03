@@ -84,7 +84,7 @@ import {
         await roseDerbyNonDeterministic.connect(accountTwo).scheduleRace(postTime, 5, 5);
 
         const meta = await roseDerbyNonDeterministic.getPrivateRaceMetaByHorseRace(0);
-        expect(meta.organizer).to.be.equal(accountTwo.address);
+        expect(meta.organizer).to.equal(accountTwo.address);
       });
     });
 

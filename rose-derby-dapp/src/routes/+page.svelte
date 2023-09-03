@@ -1,7 +1,5 @@
 <script lang="ts">
     import CreateRace from './CreateRace.svelte';
-    import RaceList from './RaceList.svelte';
- 
 </script>
 
 <div class="container">
@@ -9,9 +7,6 @@
         <CreateRace />   
     </div>
     <div class="find-existing"></div>
-    <div class="scheduled-and-finished-races">
-       <RaceList />
-    </div>
 </div>
 
 <style>

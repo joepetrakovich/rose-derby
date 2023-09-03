@@ -1,5 +1,4 @@
 import { type Network, OasisNetworkStatus } from "./Models";
-import MetaMaskOnBoarding from '@metamask/onboarding';
 import { ethers } from "ethers";
 
 const SWITCH_CHAIN_ERROR_CHAIN_NOT_ADDED: number = 4902;
@@ -65,7 +64,7 @@ export const OASIS_SAPPHIRE_TESTNET: Network = {
 
 export async function getOasisNetworkConnectionStatus(): Promise<OasisNetworkStatus> {
     try {    
-        if (!MetaMaskOnBoarding.isMetaMaskInstalled()) {
+        if (!window.ethereum) {
             return OasisNetworkStatus.PROVIDER_NOT_FOUND;
         }
 

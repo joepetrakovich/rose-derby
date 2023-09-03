@@ -22,3 +22,6 @@ export function truncateWithCenterEllipses(str: string, maxLength: number) {
   return truncatedString;
 }
 
+export function blockTimestampToDate(timestamp: bigint): Date {
+  return new Date(Number(timestamp * BigInt(1000)));
+}

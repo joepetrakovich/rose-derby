@@ -1,11 +1,16 @@
 <script>
     import Footer from "./Footer.svelte";
     import Header from "./Header.svelte";
+    import RaceList from "./RaceList.svelte";
 </script>
 
 <Header />
 
-<slot></slot>
+<div>
+    <slot></slot>    
+    <RaceList />
+</div>
+
 
 <Footer />
 
@@ -29,4 +34,11 @@
         background-size: 100vw 100vh;
         background-image: radial-gradient( 50% 50% at 50% 50%, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0) 100% ), linear-gradient(180deg, var(--color-bg-0) 0%, var(--color-bg-1) 15%, var(--color-bg-2) 50%);
     }
+
+    div {
+        display: flex;
+        justify-content: center;
+        gap: var(--base-gap);
+    }
+    
 </style>
