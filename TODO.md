@@ -13,9 +13,12 @@ DONE - base line UI reqs
 
 - nice to haves
 -- cleaned up ui (bootstrappy)
--- live flashing events for races scheduled, bets, determining results (all useful live events)
--- fix memory leaks (also may be partly the non-filtered events?)
--- a dev tutorial joe.ptrkv.ch
+--- countdowns
+--- a progress bar before horses get to race.
+--- a animation of horses running while determine race tx is going
+--- live flashing events for races scheduled, bets, determining results (all useful live events)
+- fix memory leaks (also may be partly the non-filtered events?)
+- a dev tutorial joe.ptrkv.ch
 
 # NOTES
 ------------------

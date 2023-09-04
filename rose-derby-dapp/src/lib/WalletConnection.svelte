@@ -5,9 +5,6 @@
     import { OasisNetworkStatus } from '$lib/Models';
     import { oasisNetworkStatus, signerAddress } from '$lib/Stores';
 
-    let classes: string;
-    export { classes as class };
-
     const handleConnectToSapphire = () => {
        switchNetworkOrAddIfNotExists(OASIS_SAPPHIRE_TESTNET);
     };
@@ -15,10 +12,9 @@
     const handleConnectWallet = () => {
         connectWallet();
     }
-
 </script>
 
-<div class={classes}>
+<div>
     {#if $oasisNetworkStatus === OasisNetworkStatus.INITIALIZING}
         <button disabled>Initializing...</button>
     {:else if $oasisNetworkStatus === OasisNetworkStatus.PROVIDER_NOT_FOUND}
