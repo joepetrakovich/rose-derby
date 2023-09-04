@@ -47,6 +47,8 @@ contract RoseDerby {
     address internal owner;
 
     Race[] public _races;
+    uint public totalWon;
+
     PrivateRaceMeta[] internal _meta;
     mapping(uint256 => BetData[NUM_HORSES]) internal _betDataByHorseByRace;
     mapping(uint256 => mapping(address => uint)[NUM_HORSES]) internal _totalBetByBettorByHorseByRace;
@@ -140,7 +142,9 @@ contract RoseDerby {
         for (uint i = 0; i < winningHorseBetData.bettors.length; i++) {
             address winner = winningHorseBetData.bettors[i];
             uint winnerTotalBetOnWinningHorse = _totalBetByBettorByHorseByRace[index][winningHorseNum][winner];
-            winnings[winner] += (poolAfterTakeout * winnerTotalBetOnWinningHorse) / winningHorseBetData.totalAmountBet;
+            uint amountWon = (poolAfterTakeout * winnerTotalBetOnWinningHorse) / winningHorseBetData.totalAmountBet;
+            winnings[winner] += amountWon;
+            totalWon += amountWon;
         }
 
         if (winningHorseBetData.bettors.length == 0) {

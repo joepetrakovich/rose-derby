@@ -1,26 +1,26 @@
 
 # TODAY
 ------------------
-DONE -- open race in page
-DONE -- bet on a unfinished, not yet posted race.
-DONE -- determine results on a posted unfinished race.
-DONE-- withdraw winnings
+DONE - add real summation var for the "00000 Won!"
+- fix getWinnings signature bug
+--- must be a bug because getWinnings should need a signature right? and account 2 should have some takeout awarded.. if i add withdraw I should see it..
 
 # TODO
 ------------------
 DONE - base line UI reqs
-- add real summation var for the "00000 Won!"
-- fix getWinnings signature bug
---- must be a bug because getWinnings should need a signature right? and account 2 should have some takeout awarded.. if i add withdraw I should see it..
+- demo walthrough video posted to youtube.
+- add some comments
 
 - nice to haves
 -- cleaned up ui (bootstrappy)
 -- live flashing events for races scheduled, bets, determining results (all useful live events)
+-- fix memory leaks (also may be partly the non-filtered events?)
+-- a dev tutorial joe.ptrkv.ch
 
 # NOTES
 ------------------
 Deloying the contracts with the account: 0x1Bca6F7bb997Bb9aE3164bB61a468F2a86893A30
-Rose Derby deployed to 0x4232017dBad2B11B6E5c073a33C6aF0d36Abb2d9
+Rose Derby deployed to 0x73753F538f2AE82780835a9BefFd8ebccb18EF4b
 
 -- may need to add getters for your current bets, balances so you can see what races you're in via msg.sender
 
