@@ -1,11 +1,11 @@
 <script lang="ts">
-    import PlaceBet from './PlaceBet.svelte';
+    import PlaceBet from '$lib/PlaceBet.svelte';
     import { connectedToSapphire, roseDerbyContractUnsigned } from "$lib/Stores";
     import { page } from "$app/stores";
     import { blockTimestampToDate } from "$lib/Utils";
     import type { Race } from '$lib/Models';
     import { ethers } from "ethers";
-    import DetermineResults from './DetermineResults.svelte';
+    import DetermineResults from '$lib/DetermineResults.svelte';
 
     $: ({ index } = $page.params);
 

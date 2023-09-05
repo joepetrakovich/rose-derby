@@ -18,6 +18,7 @@ contract RoseDerby {
         uint postTime;
         uint pool;
         bool finished;
+        uint8[5] results;
     }
 
     struct PrivateRaceMeta {
@@ -46,30 +47,38 @@ contract RoseDerby {
 
     address internal owner;
 
-    Race[] public _races;
+    Race[] public races;
     uint public totalWon;
+    uint8[NUM_HORSES] public horseWins;
 
     PrivateRaceMeta[] internal _meta;
     mapping(uint256 => BetData[NUM_HORSES]) internal _betDataByHorseByRace;
     mapping(uint256 => mapping(address => uint)[NUM_HORSES]) internal _totalBetByBettorByHorseByRace;
-    mapping(address => uint) private winnings;
+    mapping(address => uint) private _winnings;
 
     constructor() {
         owner = msg.sender;
     }
 
     modifier raceExists (uint256 index) {
-        require(index < _races.length, "No such race");
+        require(index < races.length, "No such race");
         _;
     }
 
-
     function getRaces() external view returns (Race[] memory) {
-      return _races;
+        return races;
+    }
+
+    function getHorseWins() external view returns (uint8[5] memory) {
+        return horseWins;
+    }
+
+    function getResults(uint256 index) external view raceExists(index) returns (uint8[5] memory) {
+        return races[index].results;
     }
 
     function getWinningsBalance() external view returns (uint) {
-      return winnings[msg.sender];
+        return _winnings[msg.sender];
     }
 
     function scheduleRace(uint postTime, uint take, uint callerIncentive) external {
@@ -81,18 +90,18 @@ contract RoseDerby {
         race.callerIncentive = callerIncentive;
         race.postTime = postTime;
 
-        _races.push(race);
+        races.push(race);
         _meta.push(
             PrivateRaceMeta({
                 organizer: msg.sender
             })
         );
 
-        emit RaceScheduled(_races.length - 1);
+        emit RaceScheduled(races.length - 1);
     }
 
     function placeBet(uint256 index, Horse horse) external payable raceExists(index) {
-        require(block.timestamp <= _races[index].postTime, "Race already started");
+        require(block.timestamp <= races[index].postTime, "Race already started");
         require(msg.value >= 2 ether, "Minimum bet is 2 ROSE");
         
         uint8 horseNum = uint8(horse);
@@ -104,7 +113,7 @@ contract RoseDerby {
 
         _totalBetByBettorByHorseByRace[index][horseNum][msg.sender] += msg.value;
 
-        _races[index].pool += msg.value;
+        races[index].pool += msg.value;
 
         emit BetPlaced(index, horse, msg.value);
     }
@@ -114,7 +123,7 @@ contract RoseDerby {
     }
 
     function determineResults(uint256 index) external raceExists(index) {
-        Race memory race = _races[index];
+        Race memory race = races[index];
 
         require(block.timestamp >= race.postTime, "Race hasn't started");
         require(!race.finished, "Race results already determined");
@@ -133,36 +142,38 @@ contract RoseDerby {
         uint8 winningHorseNum = results[0];
         BetData memory winningHorseBetData = _betDataByHorseByRace[index][winningHorseNum];
  
-        winnings[owner] += (race.pool * OWNER_TAKE) / 100;
-        winnings[_meta[index].organizer] += (race.pool * race.take) / 100;
-        winnings[msg.sender] += (race.pool * race.callerIncentive) / 100;
+        _winnings[owner] += (race.pool * OWNER_TAKE) / 100;
+        _winnings[_meta[index].organizer] += (race.pool * race.take) / 100;
+        _winnings[msg.sender] += (race.pool * race.callerIncentive) / 100;
 
-        uint poolAfterTakeout = (_races[index].pool * (100 - (OWNER_TAKE + race.take + race.callerIncentive))) / 100;
+        uint poolAfterTakeout = (races[index].pool * (100 - (OWNER_TAKE + race.take + race.callerIncentive))) / 100;
 
         for (uint i = 0; i < winningHorseBetData.bettors.length; i++) {
             address winner = winningHorseBetData.bettors[i];
             uint winnerTotalBetOnWinningHorse = _totalBetByBettorByHorseByRace[index][winningHorseNum][winner];
             uint amountWon = (poolAfterTakeout * winnerTotalBetOnWinningHorse) / winningHorseBetData.totalAmountBet;
-            winnings[winner] += amountWon;
+            _winnings[winner] += amountWon;
             totalWon += amountWon;
         }
 
         if (winningHorseBetData.bettors.length == 0) {
-            winnings[owner] += poolAfterTakeout;
+            _winnings[owner] += poolAfterTakeout;
         }
 
-        _races[index].finished = true;
+        races[index].finished = true;
+        races[index].results = results;
+        horseWins[winningHorseNum] += 1;
 
         emit RaceResultsDetermined(index, results);
     }
 
     function withdraw() external {
-        uint amount = winnings[msg.sender];
+        uint amount = _winnings[msg.sender];
         
         require(amount > 0, "No funds to withdraw");
         require(address(this).balance >= amount, "Insufficient contract balance");
 
-        winnings[msg.sender] = 0;
+        _winnings[msg.sender] = 0;
 
         (bool success, ) = msg.sender.call{value: amount}("");
         require(success, "Transfer failed.");

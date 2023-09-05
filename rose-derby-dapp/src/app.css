@@ -3,31 +3,34 @@
         Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
         sans-serif;
     --font-mono: "Fira Mono", monospace;
-    --color-bg-0: rgb(202, 216, 228);
-    --color-bg-1: hsl(209, 36%, 86%);
-    --color-bg-2: hsl(224, 44%, 95%);
-    
-    --gap-1: 4px;
-    --gap-2: 8px;
-    --gap-3: 16px;
+
+    --color-bg: #ffdde2b5;
+    --theme-color-dark-red: #3F0D12;
+    --theme-color-rose: #A71D31;
+    --theme-color-light-brown: #D5BF86;
+    --theme-color-khaki: #8D775F;
+    --theme-color-pale-green: #F1F0CC;
+    --text-color-white: #fff;
+
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 16px;
+    --space-4: 32px;
+
+    --button-padding: var(--space-1) var(--space-2);
+    --button-radius: var(--space-1);
+
+    --container-padding: var(--space-3);
+    --container-radius: var(--space-2);
+    --container-gap: var(--space-3);
+
+    --hover-brightness: 1.2;
 
     font-size: 16px;
     font-family: var(--font-body);
 }
 
 body {
-    /* background-attachment: fixed;
-    background-color: var(--color-bg-1);
-    background-size: 100vw 100vh;
-    background-image: radial-gradient(
-            50% 50% at 50% 50%,
-            rgba(255, 255, 255, 0.75) 0%,
-            rgba(255, 255, 255, 0) 100%
-        ),
-        linear-gradient(
-            180deg,
-            var(--color-bg-0) 0%,
-            var(--color-bg-1) 15%,
-            var(--color-bg-2) 50%
-        ); */
+    background: var(--color-bg);
+    padding: var(--container-padding);
 }

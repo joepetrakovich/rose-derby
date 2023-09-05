@@ -1,15 +1,17 @@
 
 # TODAY
 ------------------
-DONE - add real summation var for the "00000 Won!"
-- fix getWinnings signature bug
---- must be a bug because getWinnings should need a signature right? and account 2 should have some takeout awarded.. if i add withdraw I should see it..
+- get it looking good, mobile first then out.
+- then add the events back in carefully for live stuff
 
 # TODO
 ------------------
 DONE - base line UI reqs
 - demo walthrough video posted to youtube.
 - add some comments
+- fix getWinnings signature bug
+--- must be a bug because getWinnings should need a signature right? and account 2 should have some takeout awarded.. if i add withdraw I should see it..
+- deploy so people can use when its functional
 
 - nice to haves
 -- cleaned up ui (bootstrappy)
@@ -19,11 +21,12 @@ DONE - base line UI reqs
 --- live flashing events for races scheduled, bets, determining results (all useful live events)
 - fix memory leaks (also may be partly the non-filtered events?)
 - a dev tutorial joe.ptrkv.ch
+- connect button connects to sapphire in one fell swoop
 
 # NOTES
 ------------------
 Deloying the contracts with the account: 0x1Bca6F7bb997Bb9aE3164bB61a468F2a86893A30
-Rose Derby deployed to 0x73753F538f2AE82780835a9BefFd8ebccb18EF4b
+Rose Derby deployed to 0xBd2D43D3A87088ccAF9A9191DfA1080f36290977
 
 -- may need to add getters for your current bets, balances so you can see what races you're in via msg.sender
 

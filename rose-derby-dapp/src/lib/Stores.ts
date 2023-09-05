@@ -1,4 +1,4 @@
-import { OasisNetworkStatus } from "./Models";
+import { Events, OasisNetworkStatus, type Race } from "./Models";
 import { getOasisNetworkConnectionStatus } from "./Network";
 import { writable, readable, derived, type Readable, type Subscriber, type Unsubscriber } from "svelte/store";
 import { ethers } from "ethers";
@@ -56,6 +56,30 @@ export const roseDerbyContractUnsigned: Readable<ethers.Contract|undefined> = de
         set(undefined);
     }
 });
+
+export const horseWins: Readable<bigint[]> = derived(roseDerbyContractUnsigned, ($contract, set) => {
+    if ($contract) {
+        $contract.getHorseWins()
+        .then(set)
+        .catch(console.log); 
+    }
+}, [0n,0n,0n,0n,0n]);
+
+export const races: Readable<Race[]> = derived(roseDerbyContract, ($contract, set) => {
+    if ($contract) {
+        $contract.getRaces()
+        .then(races => set(races))
+        .catch(console.log); 
+    }
+}, []);
+
+export const globalAmountWon: Readable<bigint> = derived(roseDerbyContractUnsigned, ($contract, set) => {
+    if ($contract) {
+        $contract.totalWon()
+        .then(set)
+        .catch(console.log); 
+    }
+}, BigInt(0));
 
 export const lastKnownBlockTimestamp: Readable<Date|undefined> = derived(oasisNetworkStatus, ($networkStatus, set) => {
     const interval = setInterval(async () => {

@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { Jazzicon } from 'ethers-svelte/components';
-    import { truncateWithCenterEllipses } from "$lib/Utils";
+    import CurrentAccount from '$lib/CurrentAccount.svelte';
     import { OASIS_SAPPHIRE_TESTNET, connectWallet, switchNetworkOrAddIfNotExists } from "$lib/Network";
     import { OasisNetworkStatus } from '$lib/Models';
-    import { oasisNetworkStatus, signerAddress } from '$lib/Stores';
+    import { oasisNetworkStatus } from '$lib/Stores';
 
     const handleConnectToSapphire = () => {
        switchNetworkOrAddIfNotExists(OASIS_SAPPHIRE_TESTNET);
@@ -22,19 +21,22 @@
     {:else if $oasisNetworkStatus === OasisNetworkStatus.WALLET_NOT_CONNECTED}
         <button on:click={handleConnectWallet}>Connect</button>
     {:else if $oasisNetworkStatus === OasisNetworkStatus.ON_SAPPHIRE_PARATIME}
-        <span title="{$signerAddress}">
-            <Jazzicon address="{$signerAddress}" size={32} />
-            {truncateWithCenterEllipses($signerAddress, 13)}
-        </span>
+        <CurrentAccount />
     {:else}
         <button on:click={handleConnectToSapphire}>Connect to Sapphire</button>
     {/if}
 </div>
 
 <style>
-    span {
-        display: flex;
-        align-items: center;
-        gap: var(--base-gap);
+    button {
+        background-color: var(--theme-color-rose);
+        border: none;
+        padding: var(--button-padding);
+        color: #fff;
+        border-radius: var(--button-radius);
+    }
+    button:hover {
+        cursor: pointer;
+        filter: brightness(var(--hover-brightness));
     }
 </style>

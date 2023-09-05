@@ -19,7 +19,7 @@ contract RoseDerbyTestDeterministic is VisibleRoseDerby {
         // byte 3: randomInt: 3
         // byte 4: randomInt: 3
         // Results of shuffle:
-        // 2, 3, 4, 0, 1
+        // 2, 3, 1, 0, 4
         // Winning Horse: 2
     }
 

@@ -1,3 +1,5 @@
+import { ethers } from "ethers";
+
 export function truncateWithCenterEllipses(str: string, maxLength: number) {
   if (!str) {
     return '';
@@ -24,4 +26,22 @@ export function truncateWithCenterEllipses(str: string, maxLength: number) {
 
 export function blockTimestampToDate(timestamp: bigint): Date {
   return new Date(Number(timestamp * BigInt(1000)));
+}
+
+export default function formatEther(wei: bigint, precision: number = 2) {
+  const map = [
+    { suffix: 'T', threshold: 1e12 },
+    { suffix: 'B', threshold: 1e9 },
+    { suffix: 'M', threshold: 1e6 },
+    { suffix: 'K', threshold: 1e3 },
+    { suffix: '', threshold: 1 },
+  ];
+  const num = parseInt(ethers.formatEther(wei));
+  const found = map.find((x) => Math.abs(num) >= x.threshold);
+  if (found) {
+    const formatted = (num / found.threshold).toFixed(precision) + found.suffix;
+    return formatted;
+  }
+
+  return num;
 }

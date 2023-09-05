@@ -63,7 +63,7 @@ import {
 
         await roseDerby.connect(accountTwo)
           .scheduleRace(postTime, 5, 5);
-        const race = await roseDerby._races(0);
+        const race = await roseDerby.races(0);
         expect(race).to.deep.equal([5, 5, postTime, 0, false]);
       });
 
@@ -131,12 +131,12 @@ import {
         const postTime = await time.latest() + 60;
         await account.scheduleRace(postTime, 5, 5);
 
-        let race = await roseDerby._races(0);
+        let race = await roseDerby.races(0);
         expect(race.pool).to.equal(0);
 
         await account.placeBet(0, 1, { value: betAmount });
 
-        race = await roseDerby._races(0);
+        race = await roseDerby.races(0);
         expect(race.pool).to.equal(betAmount);
       });
 
@@ -268,7 +268,7 @@ import {
         await account.scheduleRace(postTime, 5, 5);
         await account.placeBet(0, 2, { value: betAmount });
         
-        const race = await roseDerbyDeterministic._races(0);
+        const race = await roseDerbyDeterministic.races(0);
         expect(race.pool).to.equal(betAmount);
         
         await time.increaseTo(postTime);
@@ -290,7 +290,7 @@ import {
         //don't bet on winning horse (2) so organizer loses
         await organizer.placeBet(0, 0, { value: betAmount }); 
         
-        const race = await roseDerbyDeterministic._races(0);
+        const race = await roseDerbyDeterministic.races(0);
         expect(race.pool).to.equal(betAmount);
         
         await time.increaseTo(postTime);
@@ -313,7 +313,7 @@ import {
         await organizer.scheduleRace(postTime, 0, callerIncentive);
         await organizer.placeBet(0, 0, { value: betAmount }); 
         
-        const race = await roseDerbyDeterministic._races(0);
+        const race = await roseDerbyDeterministic.races(0);
         expect(race.pool).to.equal(betAmount);
         
         await time.increaseTo(postTime);
@@ -340,7 +340,7 @@ import {
         await winningBettor.placeBet(0, 2, { value: betAmount }); 
         await winningBettor2x.placeBet(0, 2, { value: betAmount * BigInt(2) }); 
         
-        const race = await roseDerbyDeterministic._races(0);
+        const race = await roseDerbyDeterministic.races(0);
         expect(race.pool).to.equal(betAmount * BigInt(4));
         
         await time.increaseTo(postTime);
@@ -386,7 +386,7 @@ import {
         await organizer.placeBet(0, 0, { value: betAmount }); 
         await winningBettor.placeBet(0, 2, { value: betAmount }); 
         
-        const race = await roseDerbyDeterministic._races(0);
+        const race = await roseDerbyDeterministic.races(0);
         expect(race.pool).to.equal(betAmount * BigInt(2));
         
         await time.increaseTo(postTime);
@@ -421,7 +421,7 @@ import {
         await organizer.placeBet(0, 0, { value: betAmount }); 
         await winningBettor.placeBet(0, 2, { value: betAmount }); 
         
-        const race = await roseDerbyDeterministic._races(0);
+        const race = await roseDerbyDeterministic.races(0);
         expect(race.pool).to.equal(betAmount * BigInt(2));
         
         await time.increaseTo(postTime);
@@ -437,7 +437,7 @@ import {
         await organizer.placeBet(1, 0, { value: betAmount }); 
         await winningBettor.placeBet(1, 2, { value: betAmount }); 
         
-        const race2 = await roseDerbyDeterministic._races(1);
+        const race2 = await roseDerbyDeterministic.races(1);
         await time.increaseTo(postTime + 50);
         await raceCaller.determineResults(1);
 
@@ -458,7 +458,7 @@ import {
         await organizer.scheduleRace(postTime, organizerTake, 0);
         await organizer.placeBet(0, 0, { value: betAmount });  
         
-        const race = await roseDerbyDeterministic._races(0);
+        const race = await roseDerbyDeterministic.races(0);
         expect(race.pool).to.equal(betAmount);
         
         await time.increaseTo(postTime);
@@ -481,14 +481,51 @@ import {
         const account = await roseDerbyNonDeterministic.connect(accountTwo);
 
         await account.scheduleRace(postTime, 5, 5);
-        let race = await roseDerbyNonDeterministic._races(0);
+        let race = await roseDerbyNonDeterministic.races(0);
         expect(race.finished).to.be.false;
 
         await time.increaseTo(postTime);
 
         await account.determineResults(0);
-        race = await roseDerbyNonDeterministic._races(0);
+        race = await roseDerbyNonDeterministic.races(0);
         expect(race.finished).to.be.true;
+      });
+
+      it("Should allow you to get results on a race", async () => {
+        const { roseDerbyDeterministic, accountTwo, postTime } = await loadFixture(deployRoseDerbyFixture);
+        const account = await roseDerbyDeterministic.connect(accountTwo);
+
+        await account.scheduleRace(postTime, 5, 5);
+        let results = await roseDerbyDeterministic.getResults(0);
+        expect(results).to.deep.equal([0n, 0n, 0n, 0n, 0n]);
+
+        await time.increaseTo(postTime);
+
+        await account.determineResults(0);
+        results = await roseDerbyDeterministic.getResults(0);
+        expect(results).to.deep.equal([2n, 3n, 1n, 0n, 4n]);
+      });
+
+      it("Should keep a tally of horse wins", async () => {
+        const { roseDerbyDeterministic, accountTwo, postTime } = await loadFixture(deployRoseDerbyFixture);
+        const account = await roseDerbyDeterministic.connect(accountTwo);
+
+        let horseWins = await roseDerbyDeterministic.getHorseWins();
+        expect(horseWins[2]).to.equal(0n);
+        
+        await account.scheduleRace(postTime, 5, 5);
+        await time.increaseTo(postTime);
+        await account.determineResults(0);
+        
+        horseWins = await roseDerbyDeterministic.getHorseWins();
+        expect(horseWins[2]).to.equal(1n);
+
+        await account.scheduleRace(postTime + 50, 5, 5);
+        await time.increaseTo(postTime + 50);
+        await account.determineResults(1);
+
+        horseWins = await roseDerbyDeterministic.getHorseWins();
+        expect(horseWins[2]).to.equal(2n);
       });
     });
 
@@ -510,7 +547,7 @@ import {
         await organizer.scheduleRace(postTime, organizerTake, 0);
         await organizer.placeBet(0, 0, { value: betAmount }); 
 
-        const race = await roseDerbyDeterministic._races(0);
+        const race = await roseDerbyDeterministic.races(0);
         expect(race.pool).to.equal(betAmount);
         
         await time.increaseTo(postTime);
@@ -533,7 +570,7 @@ import {
         await organizer.scheduleRace(postTime, organizerTake, 0);
         await organizer.placeBet(0, 0, { value: betAmount }); 
 
-        const race = await roseDerbyDeterministic._races(0);
+        const race = await roseDerbyDeterministic.races(0);
         expect(race.pool).to.equal(betAmount);
         
         await time.increaseTo(postTime);
