@@ -24,6 +24,10 @@
         padding: var(--space-2);
         margin-bottom: var(--space-4);
     }
+    main {
+        max-width: 500px;
+        margin: 0 auto;
+    }
     a :global(svg) {
         fill: var(--theme-color-rose);
     }
