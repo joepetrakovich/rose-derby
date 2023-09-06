@@ -1,6 +1,6 @@
 <script lang="ts">
     import { races } from "$lib/Stores";
-    import OasisLogo from "$lib/images/oasis-logo-120px.png";
+    import OasisLogo from "$lib/images/oasis-logo.png"
     import formatEther, { blockTimestampToDate } from "$lib/Utils";
     import { goto } from "$app/navigation";
 </script>
@@ -18,17 +18,17 @@
                     <td>Post Time</td>
                     <td title="% of pool given to race organizer">Take</td>
                     <td title="% of pool given to race results caller">Incentive</td>
-                    <td>Pool<img src={OasisLogo} alt="Oasis Rose Icon" width="16px" /></td>
+                    <td>Pool <img src="{OasisLogo}" alt="Oasis Logo" height="16px" /></td>
                 </tr>
             </thead>
             <tbody>
-                {#each $races as race, i}
-                <tr on:click={() => goto(`/races/${i}`)}>
+                {#each $races as { postTime, take, callerIncentive, pool, finished }, i}
+                <tr class:finished on:click={() => goto(`/races/${i}`)}>
                     <td>{i}</td>
-                    <td>{blockTimestampToDate(race.postTime).toLocaleString()}</td>
-                    <td>{race.take}%</td>
-                    <td>{race.callerIncentive}%</td>
-                    <td>{formatEther(race.pool, 0)}</td>
+                    <td>{blockTimestampToDate(postTime).toLocaleString()}</td>
+                    <td>{take}%</td>
+                    <td>{callerIncentive}%</td>
+                    <td>{formatEther(pool, 0)}</td>
                 </tr>
             {/each}
             </tbody>
@@ -106,6 +106,10 @@
     tbody tr:hover {
         background-color: rgba(202, 202, 202, 0.75);
         cursor: pointer;
+    }
+    tr.finished {
+        background-color: rgba(196, 196, 196, 0.50);
+        color: gray;
     }
     small {
         color: gray;
