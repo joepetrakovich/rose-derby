@@ -2,6 +2,7 @@
 # TODAY
 ------------------
 DONE - clean up create race design
+DONE - deploy to netlify
 - clean up race list item design
 
 
@@ -19,7 +20,6 @@ DONE - base line UI reqs
 - add some comments
 - fix getWinnings signature bug
 --- must be a bug because getWinnings should need a signature right? and account 2 should have some takeout awarded.. if i add withdraw I should see it..
-- deploy so people can use when its functional
 
 - nice to haves
 -- cleaned up ui (bootstrappy)
