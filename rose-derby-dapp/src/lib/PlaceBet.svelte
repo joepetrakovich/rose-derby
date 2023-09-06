@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { createEventDispatcher } from "svelte";
     import { Horse } from "$lib/Models";
     import { connectedToSapphire, roseDerbyContract } from "$lib/Stores";
     import TransactionPending from "$lib/TransactionPending.svelte";
@@ -6,6 +7,7 @@
 
     export let index: number;
 
+    const dispatch = createEventDispatcher();
     const horses = Object.keys(Horse).filter((v) => isNaN(Number(v)));
 
     let horse: number;
@@ -21,8 +23,13 @@
         $roseDerbyContract
             ?.placeBet(index, horse, { gasLimit: 400000, value: betAmountInWei })
             .then(transaction => {
-                tx = transaction.wait();
-                (event.target as HTMLFormElement).reset();
+                tx = transaction
+                .wait()
+                .then(() => dispatch('bet-placed'));
+                //(event.target as HTMLFormElement).reset();
+               // invalidateAll();
+                //TODO: maybe better to pass an event up to the page and let 
+                //the page call invalidate
             })
             .catch(console.log)
             .finally(() => submitting = false)

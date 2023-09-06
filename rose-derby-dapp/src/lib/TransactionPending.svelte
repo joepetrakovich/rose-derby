@@ -8,7 +8,8 @@
     small {
         color: gray;
         font-style: italic;
-        margin-top: 4px;
+        display: block;
+        margin-top: 8px;
         animation: flash linear 2s infinite;
     }
     @keyframes flash {

@@ -1,11 +1,11 @@
 <script>
-    import RaceList2 from '$lib/RaceList2.svelte';
+    import RaceList from '$lib/RaceList.svelte';
     import Stats from '$lib/Stats.svelte';
 </script>
 
 <div>
     <Stats />
-    <RaceList2 />
+    <RaceList />
 </div>
 
 <style>

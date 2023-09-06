@@ -1,27 +1,24 @@
 <script lang="ts">
     import PlaceBet from '$lib/PlaceBet.svelte';
-    import { connectedToSapphire, roseDerbyContractUnsigned } from "$lib/Stores";
-    import { page } from "$app/stores";
     import { blockTimestampToDate } from "$lib/Utils";
-    import type { Race } from '$lib/Models';
     import { ethers } from "ethers";
     import DetermineResults from '$lib/DetermineResults.svelte';
+    import type { Race } from '$lib/Models.js';
+    import { roseDerbyContract } from '$lib/Stores.js';
 
-    $: ({ index } = $page.params);
-
+    export let data;
+    let { index } = data;
     let race: Race;
 
-    $: {
-        if ($connectedToSapphire) {
-            $roseDerbyContractUnsigned?._races(index)
-            .then(result => race = result)
-            .catch(console.log);
-        }
+    $: $roseDerbyContract && loadRace();
+
+    function loadRace() {
+        $roseDerbyContract?.races(index).then(r => race = r);
     }
 </script>
 
-{#if race}
-    <div class="container">
+<div class="container"> 
+    {#if race}
         <div class="race">
             <span>Race # {index}</span>
             <span>Take: {race.take}</span>
@@ -33,13 +30,15 @@
         
         {#if !race.finished}
             {#if new Date() < blockTimestampToDate(race.postTime)}
-                <PlaceBet {index} />
+                <PlaceBet {index} on:bet-placed={loadRace} />
             {:else} 
                 <DetermineResults {index} />
             {/if}
         {/if}
-    </div>
-{/if}
+    {:else}
+        Loading race...
+    {/if}
+</div>
 
 <style>
     .container, .race {

@@ -1,8 +1,16 @@
 
 # TODAY
 ------------------
+DONE - clean up create race design
+- clean up race list item design
+
+
+# IN PROG
+------------------
 - get it looking good, mobile first then out.
+-- jump to create race ui since new contracts lose data
 - then add the events back in carefully for live stuff
+
 
 # TODO
 ------------------
@@ -15,9 +23,11 @@ DONE - base line UI reqs
 
 - nice to haves
 -- cleaned up ui (bootstrappy)
+- start cleaning up place bet + single race view design
 --- countdowns
 --- a progress bar before horses get to race.
 --- a animation of horses running while determine race tx is going
+--- go back to winnings to compute x/x odds? or % wins
 --- live flashing events for races scheduled, bets, determining results (all useful live events)
 - fix memory leaks (also may be partly the non-filtered events?)
 - a dev tutorial joe.ptrkv.ch
@@ -27,6 +37,9 @@ DONE - base line UI reqs
 ------------------
 Deloying the contracts with the account: 0x1Bca6F7bb997Bb9aE3164bB61a468F2a86893A30
 Rose Derby deployed to 0xBd2D43D3A87088ccAF9A9191DfA1080f36290977
+
+- could have a "posting soon" timer store that updates live
+- track time
 
 -- may need to add getters for your current bets, balances so you can see what races you're in via msg.sender
 

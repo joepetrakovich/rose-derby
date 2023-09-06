@@ -2,8 +2,9 @@
     import { globalAmountWon, horseWins, races } from "$lib/Stores";
     import { Horse } from "./Models";
     import formatNumber from "./Utils";
+    import { fly } from "svelte/transition";
 
-    $: raceWithlargestPool = $races.map((r, i) => ({i: i, pool: r.pool}))
+    $: raceWithLargestPool = $races.map((r, i) => ({i: i, pool: r.pool}))
         .reduce((prev, current) => (prev.pool > current.pool) ? prev : current, {i: -1, pool: 0n});
 
     $: topHorse = $horseWins.map((numWins, i) => ({i: i, numWins }))
@@ -12,14 +13,14 @@
 </script>
 
 <div class="stats">
-    <div>
+    {#if raceWithLargestPool.pool == 0n}
+    <div><span>Largest Pool</span><span>0 ROSE</span></div>
+    {:else}
+    <a href="/races/{raceWithLargestPool.i}">
         <span>Largest Pool</span>
-        <span>
-            <a href="/races/{raceWithlargestPool.i}">
-                {formatNumber(raceWithlargestPool.pool, 0)} ROSE
-            </a>
-        </span>
-    </div>
+        <span>{formatNumber(raceWithLargestPool.pool, 0)} ROSE</span>
+    </a>
+    {/if}
     <div>
         <span>Global Winnings</span>
         <span>{formatNumber($globalAmountWon, 0)} ROSE</span>
@@ -38,16 +39,19 @@
         justify-content: space-between;
         gap: var(--container-gap);
     }
-    .stats > div {
+    .stats > div, .stats > a {
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: var(--container-padding);
+        padding: var(--space-2);
         border-radius: var(--container-radius);
         background-color: #fff;
         flex-grow: 1;
     }
-    .stats > div:nth-child(1) {
+    .stats > a:hover {
+        filter: brightness(110%);
+    }
+    .stats > a, .stats > div:nth-child(1) {
         background-color: var(--theme-color-khaki);
         color: var(--text-color-white);
     }
@@ -58,7 +62,14 @@
         background-color: #fff;
     }
     span:first-child {
+        font-size: 0.9rem;
+    }
+    span:last-child {
         font-weight: bold;
+    }
+    a:link, a:visited, a:active {
+        text-decoration: none;
+        color: white;
     }
 </style>
 
