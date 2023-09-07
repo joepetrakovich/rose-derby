@@ -21,7 +21,7 @@
         const betAmountInWei: BigInt = ethers.parseEther(betAmount.toString());
         console.log("betting %d ether", betAmountInWei);
         $roseDerbyContract
-            ?.placeBet(index, horse, { gasLimit: 400000, value: betAmountInWei })
+            ?.placeBet(index, horse, { gasLimit: 10_000_000, value: betAmountInWei })
             .then(transaction => {
                 tx = transaction
                 .wait()

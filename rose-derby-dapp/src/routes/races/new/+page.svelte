@@ -15,7 +15,7 @@
   
     const handleSubmit = (event: Event) => {
         submitting = true;
-        $roseDerbyContract?.scheduleRace(Math.floor(new Date(postTime).getTime() / 1000), take, callerIncentive, { gasLimit: 400000 })
+        $roseDerbyContract?.scheduleRace(Math.floor(new Date(postTime).getTime() / 1000), take, callerIncentive, { gasLimit: 10_000_000 })
             .then(transaction => {
                 tx = transaction.wait();
                 (event.target as HTMLFormElement).reset();
