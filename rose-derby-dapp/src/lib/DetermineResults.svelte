@@ -11,7 +11,7 @@
     const handleSubmit = (event: Event) => {
         submitting = true;
         $roseDerbyContract
-            ?.determineResults(index, { gasLimit: 400000 })
+            ?.determineResults(index, { gasLimit: 10_000_000 })
             .then(transaction => {
                 tx = transaction.wait();
                 (event.target as HTMLFormElement).reset();

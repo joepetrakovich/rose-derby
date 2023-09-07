@@ -4,16 +4,16 @@
     import { ethers } from "ethers";
     import DetermineResults from '$lib/DetermineResults.svelte';
     import type { Race } from '$lib/Models.js';
-    import { roseDerbyContract } from '$lib/Stores.js';
+    import { roseDerbyContractUnsigned } from '$lib/Stores.js';
 
     export let data;
     let { index } = data;
     let race: Race;
 
-    $: $roseDerbyContract && loadRace();
+    $: $roseDerbyContractUnsigned && loadRace();
 
     function loadRace() {
-        $roseDerbyContract?.races(index).then(r => race = r);
+        $roseDerbyContractUnsigned?.races(index).then(r => race = r);
     }
 </script>
 
