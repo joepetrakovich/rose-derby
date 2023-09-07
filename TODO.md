@@ -1,37 +1,30 @@
 
 # TODAY
 ------------------
-DONE - clean up create race design
-DONE - deploy to netlify
-- clean up race list item design
-
+DONE - fix getWinnings signature bug
 
 # IN PROG
 ------------------
-- get it looking good, mobile first then out.
--- jump to create race ui since new contracts lose data
-- then add the events back in carefully for live stuff
-
 
 # TODO
 ------------------
 DONE - base line UI reqs
+- fix the race page ui for betting, determining results.
 - demo walthrough video posted to youtube.
 - add some comments
-- fix getWinnings signature bug
---- must be a bug because getWinnings should need a signature right? and account 2 should have some takeout awarded.. if i add withdraw I should see it..
+
+- then add the events back in carefully for live stuff
 
 - nice to haves
--- cleaned up ui (bootstrappy)
-- start cleaning up place bet + single race view design
 --- countdowns
 --- a progress bar before horses get to race.
+--- responsive design that scales out to desktop.
 --- a animation of horses running while determine race tx is going
 --- go back to winnings to compute x/x odds? or % wins
 --- live flashing events for races scheduled, bets, determining results (all useful live events)
 - fix memory leaks (also may be partly the non-filtered events?)
+- colored dots for results on races.
 - a dev tutorial joe.ptrkv.ch
-- connect button connects to sapphire in one fell swoop
 
 # NOTES
 ------------------
