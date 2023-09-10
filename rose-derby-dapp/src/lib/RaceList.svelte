@@ -97,7 +97,7 @@
         gap: 4px;
     }
     td {
-        padding: 12px 15px;
+        padding: 12px 10px;
     }
     tbody tr {
         border-bottom: 1px solid #dddddd;
