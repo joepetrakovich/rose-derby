@@ -59,7 +59,8 @@
     input {
         border-top: 0;
         border-left: 0;
-        border-right: 0
+        border-right: 0;
+        font-size: 1.3rem;
     }
     form div {
         padding: unset;
@@ -72,9 +73,6 @@
     label {
         font-size: 0.8rem;
         color: gray;
-    }
-    input {
-        font-size: 1.3rem;
     }
     div > span {
         font-weight: bold;

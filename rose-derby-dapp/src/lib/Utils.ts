@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { DateTime, type DateTimeFormatOptions } from "luxon"
 
 export function truncateWithCenterEllipses(str: string, maxLength: number) {
   if (!str) {
@@ -45,3 +46,5 @@ export default function formatEther(wei: bigint, precision: number = 2) {
 
   return num;
 }
+
+export const dateFormat: DateTimeFormatOptions = {...DateTime.DATETIME_SHORT, month: '2-digit', day: '2-digit', year: '2-digit'};

@@ -38,6 +38,12 @@
     100% { opacity: 1; } 
 }
 
+@keyframes flash-mid {
+    0% { opacity: 1; } 
+    50% { opacity: 0.3; } 
+    100% { opacity: 1; } 
+}
+
 body {
     background: var(--color-bg);
     padding: var(--container-padding);

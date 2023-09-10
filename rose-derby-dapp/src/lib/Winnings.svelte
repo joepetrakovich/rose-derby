@@ -52,6 +52,7 @@
         border-radius: 16px;
         background-color: var(--theme-color-pale-green);
         padding: var(--space-1) var(--container-padding);
+        max-width: fit-content;
     }
     span {
         display: flex;
