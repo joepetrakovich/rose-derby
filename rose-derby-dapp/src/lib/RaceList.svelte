@@ -1,20 +1,10 @@
 <script lang="ts">
     import { races } from "$lib/Stores";
     import OasisLogo from "$lib/images/oasis-logo.png"
-    import formatEther, { blockTimestampToDate } from "$lib/Utils";
+    import formatEther, { blockTimestampToDate, dateFormat } from "$lib/Utils";
     import { goto } from "$app/navigation";
     import { DateTime } from "luxon";
     import type { Race } from "./Models";
-
-    const sortRaces = (a: Race, b: Race): number => {
-        if (a.postTime > b.postTime) {
-            return 1;
-        }
-        if (a.postTime < b.postTime) {
-            return -1;
-        }
-        return 0;
-    }
 </script>
 
 <div>
@@ -38,7 +28,7 @@
                 {@const time = DateTime.fromJSDate(blockTimestampToDate(postTime))}
                 <tr class:finished on:click={() => goto(`/races/${i}`)}>
                     <td>{i}</td>
-                    <td>{time.toLocaleString({...DateTime.DATETIME_SHORT, month: '2-digit', day: '2-digit', year: '2-digit'})}</td>
+                    <td>{time.toLocaleString(dateFormat)}</td>
                     <td>{take}%</td>
                     <td>{callerIncentive}%</td>
                     <td>{formatEther(pool, 0)}</td>

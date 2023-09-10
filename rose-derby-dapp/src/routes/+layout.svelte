@@ -6,12 +6,16 @@
 </script>
 
 <nav>
-    <a href="/">
-        <ThreeHorses />
-    </a>
+    <div>
+        <a href="/">
+            <ThreeHorses />
+        </a>
+        <div>
+            <WalletConnection />
+        </div>
+    </div>
     <div>
         <Winnings />
-        <WalletConnection />
     </div>
 </nav>
 
@@ -22,18 +26,30 @@
 <style>
     nav {
         display: flex;
+        flex-direction: column;
+        margin-bottom: var(--space-4);
+    }
+    nav > div:first-child {
+        display: flex;
         align-items: center;
         justify-content: space-between;
         gap: var(--gap-1);
         padding: var(--space-2);
-        margin-bottom: var(--space-4);
     }
-    div {
+    nav > div:nth-child(2) {
         display: flex;
+        justify-content: end;
+    }
+    /* nav > div {
+        display: flex;
+        flex-direction: column-reverse;
         align-items: center;
         justify-content: space-between;
         gap: var(--container-gap);
     }
+    span {
+  
+    } */
     main {
         max-width: 500px;
         margin: 0 auto;

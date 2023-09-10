@@ -1,21 +1,22 @@
 
 # TODAY
 ------------------
-DONE - fix getWinnings signature bug
+DONE - fix the race page ui for betting, determining results.
+
 
 # IN PROG
 ------------------
 
 # TODO
 ------------------
-DONE - base line UI reqs
-- fix the race page ui for betting, determining results.
 - demo walthrough video posted to youtube.
 - add some comments
 
-- then add the events back in carefully for live stuff
+- then add the events back in carefully for live stuff and updates
 
 - nice to haves
+--- test net token button
+--- github tag
 --- countdowns
 --- a progress bar before horses get to race.
 --- responsive design that scales out to desktop.

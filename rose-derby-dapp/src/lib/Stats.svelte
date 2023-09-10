@@ -28,7 +28,11 @@
     <div>
         <span>Top Horse</span>
         <span>
-            {#if topHorse.numWins === 0n}TIE{:else}{Horse[topHorse.i]}{/if}
+            {#if topHorse.numWins === 0n}
+                TIE
+            {:else}
+                {Horse[topHorse.i]}
+            {/if}
         </span>
     </div>
 </div>
@@ -62,10 +66,12 @@
         background-color: #fff;
     }
     span:first-child {
-        font-size: 0.9rem;
+        font-size: 0.75rem;
+        text-align: center;
     }
     span:last-child {
         font-weight: bold;
+        font-size: 0.9rem;
     }
     a:link, a:visited, a:active {
         text-decoration: none;
