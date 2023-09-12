@@ -95,26 +95,6 @@
         background-color: var(--theme-color-pale-green);
         margin-bottom: var(--space-2);
     }
-    .black :global(svg) {
-        fill: black;
-        stroke: black;
-    }
-    .blue  :global(svg) {
-        fill: blue;
-        stroke: blue;
-    }
-    .green  :global(svg) {
-        fill: green;
-        stroke: green;
-    }
-    .red  :global(svg) {
-        fill: red;
-        stroke: red;
-    }
-    .white  :global(svg) {
-        fill: rgb(198, 198, 198);
-        stroke: rgb(203, 203, 203);;
-    }
     button {
         background-color: var(--theme-color-rose);
         border: none;

@@ -2,17 +2,18 @@
     import PlaceBet from '$lib/PlaceBet.svelte';
     import DetermineResults from '$lib/DetermineResults.svelte';
     import { roseDerbyContractUnsigned } from '$lib/Stores.js';
-    import type { Race } from '$lib/Models.js';
+    import { Horse, type Race } from '$lib/Models.js';
     import formatEther, { blockTimestampToDate } from "$lib/Utils";
     import { DateTime } from 'luxon';
     import { readable } from 'svelte/store';
+    import HorseIcon from '$lib/images/HorseIcon.svelte';
 
     export let data;
 
     let { index } = data;
     let race: Race;
     let postTime: DateTime;
-    let results: any[];
+    let results: { horse: Horse, position: number }[] = [];
 
     $: $roseDerbyContractUnsigned && loadRace();
 
@@ -33,7 +34,11 @@
                 if (race.finished) {
                  $roseDerbyContractUnsigned!
                     .getResults(index)
-                    .then(r => results = r);
+                    .then(r => {
+                        results = r.map((r: bigint, i: number) => ({
+                            horse: Horse[Number(r)], position: i+1, 
+                        }));
+                    });
                 }
             })
             .catch(console.log);
@@ -73,7 +78,17 @@
                 <DetermineResults {index} />
             {/if}
         {:else}
-            {results}
+            <div class="results">
+                <span>Results</span>
+                <div>
+                    {#each results as { horse, position }}
+                        <div class="{position==1 ? 'first':''} {horse.toString().toLowerCase()}">
+                            <span>{position}{position == 1 ? "st" : position == 2 ? "nd" : position == 3 ? "rd" : "th" }</span>     
+                            <HorseIcon />
+                        </div>
+                    {/each}  
+                </div> 
+            </div>
         {/if}
     {:else}
         Loading race...
@@ -108,5 +123,28 @@
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
+    }
+    .results {
+        background-color: var(--theme-color-pale-green);
+        border-radius: 6px;
+        padding: var(--container-padding);
+    }
+    .results span {
+        display: block;
+        margin-bottom: var(--space-2);
+    }
+    .results > div {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+    }
+    .results > div > div {
+        background-color: rgb(255, 255, 255);
+        border-radius: 6px;
+        padding: var(--space-1);
+    }
+    .results div.first {
+        background-color: gold;
+        border: 1px solid black;
     }
 </style>
