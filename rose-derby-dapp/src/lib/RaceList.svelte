@@ -26,7 +26,9 @@
                 {#each $races as { postTime, take, callerIncentive, pool, finished, winner }, index}
                 {@const time = DateTime.fromJSDate(blockTimestampToDate(postTime))}
                 <tr class:finished on:click={() => goto(`/races/${index}`)}>
-                    <td>{index} <i class="winner-dot" style:background-color={bigIntToHorse(winner).toLowerCase()}></i></td>
+                    <td>
+                        <span>{index} <i class="winner-dot" style:background-color={bigIntToHorse(winner).toLowerCase()}></i></span>
+                    </td>
                     <td>{time.toLocaleString(dateFormat)}</td>
                     <td>{take}%</td>
                     <td>{callerIncentive}%</td>
@@ -113,7 +115,7 @@
         background-color: rgba(196, 196, 196, 0.50);
         color: gray;
     }
-    tbody td:first-child {
+    tbody td:first-child span {
         display: flex;
         align-items: center;
         gap: var(--space-2);
