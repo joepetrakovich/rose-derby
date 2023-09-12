@@ -18,6 +18,7 @@ contract RoseDerby {
         uint postTime;
         uint pool;
         bool finished;
+        uint8 winner;
         uint8[5] results;
     }
 
@@ -161,6 +162,7 @@ contract RoseDerby {
         }
 
         races[index].finished = true;
+        races[index].winner = winningHorseNum;
         races[index].results = results;
         horseWins[winningHorseNum] += 1;
 

@@ -64,7 +64,7 @@ import {
         await roseDerby.connect(accountTwo)
           .scheduleRace(postTime, 5, 5);
         const race = await roseDerby.races(0);
-        expect(race).to.deep.equal([5, 5, postTime, 0, false]);
+        expect(race).to.deep.equal([5, 5, postTime, 0, false, 0]);
       });
 
       it("Should allow you to query all races", async () => {
@@ -504,6 +504,26 @@ import {
         await account.determineResults(0);
         results = await roseDerbyDeterministic.getResults(0);
         expect(results).to.deep.equal([2n, 3n, 1n, 0n, 4n]);
+      });
+
+      it("Should store the winning horse", async () => {
+        const { roseDerbyDeterministic, accountTwo, postTime } = await loadFixture(deployRoseDerbyFixture);
+        const account = await roseDerbyDeterministic.connect(accountTwo);
+
+        await account.scheduleRace(postTime, 5, 5);
+        let results = await roseDerbyDeterministic.getResults(0);
+        expect(results).to.deep.equal([0n, 0n, 0n, 0n, 0n]);
+        let race = await roseDerbyDeterministic.races(0);
+        expect(race.winner).to.equal(0n)
+
+        await time.increaseTo(postTime);
+
+        await account.determineResults(0);
+        results = await roseDerbyDeterministic.getResults(0);
+        expect(results).to.deep.equal([2n, 3n, 1n, 0n, 4n]);
+
+        race = await roseDerbyDeterministic.races(0);
+        expect(race.winner).to.equal(2n);
       });
 
       it("Should keep a tally of horse wins", async () => {

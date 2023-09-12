@@ -1,15 +1,14 @@
 <script lang="ts">
     import { races } from "$lib/Stores";
     import OasisLogo from "$lib/images/oasis-logo.png"
-    import formatEther, { blockTimestampToDate, dateFormat } from "$lib/Utils";
+    import formatEther, { bigIntToHorse, blockTimestampToDate, dateFormat } from "$lib/Utils";
     import { goto } from "$app/navigation";
     import { DateTime } from "luxon";
-    import type { Race } from "./Models";
 </script>
 
 <div>
     <span>
-        Races
+        Races  
         <button on:click={() => goto("/races/new")}>+ Create Race</button>
     </span>
     <div>
@@ -24,10 +23,10 @@
                 </tr>
             </thead>
             <tbody>
-                {#each $races as { postTime, take, callerIncentive, pool, finished }, i}
+                {#each $races as { postTime, take, callerIncentive, pool, finished, winner }, index}
                 {@const time = DateTime.fromJSDate(blockTimestampToDate(postTime))}
-                <tr class:finished on:click={() => goto(`/races/${i}`)}>
-                    <td>{i}</td>
+                <tr class:finished on:click={() => goto(`/races/${index}`)}>
+                    <td>{index} <i class="winner-dot" style:background-color={bigIntToHorse(winner).toLowerCase()}></i></td>
                     <td>{time.toLocaleString(dateFormat)}</td>
                     <td>{take}%</td>
                     <td>{callerIncentive}%</td>
@@ -113,6 +112,20 @@
     tr.finished {
         background-color: rgba(196, 196, 196, 0.50);
         color: gray;
+    }
+    tbody td:first-child {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+
+    }
+    .winner-dot {
+        height: 10px;
+        width: 10px;
+        border-radius: 14px;
+    }
+    tr:not(.finished) .winner-dot {
+        display: none;
     }
     small {
         color: gray;

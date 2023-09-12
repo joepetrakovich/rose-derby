@@ -2,18 +2,24 @@
     import { Jazzicon } from 'ethers-svelte/components';
     import { truncateWithCenterEllipses } from "$lib/Utils";
     import { signerAddress } from '$lib/Stores';
-    import TrophyIcon from './images/TrophyIcon.svelte';
-
+    
+    export let showAddress: boolean = false;
 </script>
 
-
-<!-- <TrophyIcon /> -->
 <span title="Current Address: {$signerAddress}">
     <Jazzicon address="{$signerAddress}" size={32} />
-    <!-- {truncateWithCenterEllipses($signerAddress, 13)} -->
+    {#if showAddress}
+        {truncateWithCenterEllipses($signerAddress, 13)}
+    {/if}
 </span>    
 
-    <!-- flex col on mobile, flex row on wide-->
-    <!-- <span>Winnings</span> -->
-    <!-- testnet badge, get test tokens badge-->
+<style>
+    span {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+    }
+</style>
+
+
 
