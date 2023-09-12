@@ -27,6 +27,7 @@ export interface Race {
     postTime: bigint;
     pool: bigint;
     finished: boolean;
+    winner: bigint;
   }
 
 export enum Horse { Black = 0, Blue = 1, Green = 2, Red = 3, White = 4 }

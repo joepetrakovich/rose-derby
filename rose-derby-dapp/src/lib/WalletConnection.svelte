@@ -4,6 +4,8 @@
     import { OasisNetworkStatus } from '$lib/Models';
     import { oasisNetworkStatus } from '$lib/Stores';
 
+    export let showAddress:boolean = false;
+
     const handleConnectToSapphire = () => {
        switchNetworkOrAddIfNotExists(OASIS_SAPPHIRE_TESTNET);
     };
@@ -21,7 +23,7 @@
     {:else if $oasisNetworkStatus === OasisNetworkStatus.WALLET_NOT_CONNECTED}
         <button on:click={handleConnectWallet}>Connect</button>
     {:else if $oasisNetworkStatus === OasisNetworkStatus.ON_SAPPHIRE_PARATIME}
-        <CurrentAccount />
+        <CurrentAccount {showAddress} />
     {:else}
         <button on:click={handleConnectToSapphire}>Connect to Sapphire</button>
     {/if}

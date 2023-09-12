@@ -3,8 +3,7 @@
     import DetermineResults from '$lib/DetermineResults.svelte';
     import { roseDerbyContractUnsigned } from '$lib/Stores.js';
     import type { Race } from '$lib/Models.js';
-    import formatEther, { blockTimestampToDate, dateFormat } from "$lib/Utils";
-    import { ethers } from "ethers";
+    import formatEther, { blockTimestampToDate } from "$lib/Utils";
     import { DateTime } from 'luxon';
     import { readable } from 'svelte/store';
 
@@ -13,6 +12,7 @@
     let { index } = data;
     let race: Race;
     let postTime: DateTime;
+    let results: any[];
 
     $: $roseDerbyContractUnsigned && loadRace();
 
@@ -27,6 +27,14 @@
             .then(r => {
                 race = r;
                 postTime = DateTime.fromJSDate(blockTimestampToDate(race.postTime));
+            })
+            .then(() => 
+            {   
+                if (race.finished) {
+                 $roseDerbyContractUnsigned!
+                    .getResults(index)
+                    .then(r => results = r);
+                }
             })
             .catch(console.log);
     }
@@ -64,6 +72,8 @@
             {:else} 
                 <DetermineResults {index} />
             {/if}
+        {:else}
+            {results}
         {/if}
     {:else}
         Loading race...

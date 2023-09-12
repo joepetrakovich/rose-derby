@@ -33,7 +33,6 @@ export const signerAddress = readable<string>('', set => {
 
 export const roseDerbyContract: Readable<ethers.Contract|undefined> = derived([oasisNetworkStatus, signerAddress], ([$networkStatus], set) => {
     if ($networkStatus == OasisNetworkStatus.ON_SAPPHIRE_PARATIME) {     
-        console.log("contract reinstantiated");
         let wrapped = sapphire.wrap(window.ethereum);
         const sign = new ethers.BrowserProvider(wrapped)
             .getSigner()
@@ -84,24 +83,16 @@ export const globalAmountWon: Readable<bigint> = derived(roseDerbyContractUnsign
     }
 }, BigInt(0));
 
-export const lastKnownBlockTimestamp: Readable<Date|undefined> = derived(oasisNetworkStatus, ($networkStatus, set) => {
-    const interval = setInterval(async () => {
-        if ($networkStatus == OasisNetworkStatus.ON_SAPPHIRE_PARATIME) {
-            const provider = sapphire.wrap(new ethers.BrowserProvider(window.ethereum));
-            provider.getBlockNumber()
-            .then(provider.getBlock)
-            .then(block => {
-                if (block) {
-                    set(new Date(block.timestamp * 1000));
-                }
-            })
-            .catch(console.log);
-        } else {
-            set(undefined);
-        }
-    }, 1000);
+export const useMediaQuery: (mediaQueryString: string) => Readable<boolean> = (mediaQueryString: string) => {
+    const matches = readable(false, (set) => {
+        const m: MediaQueryList = window.matchMedia(mediaQueryString);
+        set(m.matches);
 
-    return function stop() {
-        clearInterval(interval); 
-    }
-});
+        const listener: (this: MediaQueryList, ev: MediaQueryListEvent) => any = e => set(e.matches);
+        m.addEventListener("change", listener);
+
+        return () => m.removeEventListener("change", listener);
+    });
+
+    return matches;
+}
