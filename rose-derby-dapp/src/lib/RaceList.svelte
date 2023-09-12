@@ -1,16 +1,48 @@
 <script lang="ts">
-    import { races } from "$lib/Stores";
+    import { races, useMediaQuery } from "$lib/Stores";
     import OasisLogo from "$lib/images/oasis-logo.png"
     import formatEther, { bigIntToHorse, blockTimestampToDate, dateFormat } from "$lib/Utils";
     import { goto } from "$app/navigation";
     import { DateTime } from "luxon";
+    import { readable, type Readable } from "svelte/store";
+    import { onMount } from "svelte";
+
+    const findNextRace = () => $races
+        .map((r, i) => ({index: i, postTime: DateTime.fromJSDate(blockTimestampToDate(r.postTime)) }))
+        .filter(r => r.postTime > DateTime.now())
+        .reduce((prev, current) => (prev.postTime < current.postTime) ? prev : current, {index: -1, postTime: DateTime.now().plus({ days: 9999 })});
+    
+    $: nextRace = $races && findNextRace();
+
+    const nextRaceStartsIn = readable<DateTime|null>(null, set => {
+        const interval = setInterval(() => {
+            if (nextRace && nextRace.postTime > DateTime.now()) {
+                set(nextRace.postTime);
+            } else {
+                nextRace = findNextRace();
+                set(null);
+            }
+        }, 1000);
+        return () => clearInterval(interval);
+    });
+
+    let atLeast400pxWide: Readable<boolean>;
+    
+    onMount(() => {
+        atLeast400pxWide = useMediaQuery("(min-width: 400px)");
+    })
 </script>
 
 <div>
-    <span>
-        Races  
+    <header>
+        <span>
+            Races
+            {#if $atLeast400pxWide && nextRace?.index > -1 && $nextRaceStartsIn && $nextRaceStartsIn > DateTime.now()}
+                <a href="/races/{nextRace.index}">Next Race: {$nextRaceStartsIn.toRelative()}</a>
+            {/if}
+        </span>
         <button on:click={() => goto("/races/new")}>+ Create Race</button>
-    </span>
+    </header>
     <div>
         <table>
             <thead>
@@ -56,16 +88,21 @@
         padding: 0 0;
         border-radius: unset;
     }
-    div > span, table {
+    header, table {
         padding-left: var(--container-padding);
         padding-right: var(--container-padding);
     }
-    div > span {
+    header {
         display: flex;
         align-items: center;
         justify-content: space-between;
         font-weight: bold;
         padding-bottom: var(--container-padding);
+    }
+    header a {
+        color: gray;
+        font-size: 0.85rem;
+        padding-left: var(--space-2);
     }
     button {
         background-color: var(--theme-color-rose);

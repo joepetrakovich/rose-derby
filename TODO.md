@@ -1,9 +1,10 @@
 
 # TODAY
 ------------------
-- styling of results.
+DONE - styling of results.
 DONE -- color dot on racelist
--- ordered horse svgs on race view.
+DONE -- ordered horse svgs on race view.
+DONE -- added next race countdown
 
 # IN PROG
 ------------------
@@ -14,7 +15,6 @@ DONE -- color dot on racelist
 -- demo walthrough video posted to youtube.
 -- add some comments
 --optional-- a dev tutorial joe.ptrkv.ch
-
 
 - nice to haves
 --- animation of horses running while determine race tx is going

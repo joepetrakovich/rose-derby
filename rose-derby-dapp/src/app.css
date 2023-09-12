@@ -48,3 +48,24 @@ body {
     background: var(--color-bg);
     padding: var(--container-padding);
 }
+
+.black svg {
+    fill: black;
+    stroke: black;
+}
+.blue  svg {
+    fill: blue;
+    stroke: blue;
+}
+.green svg {
+    fill: green;
+    stroke: green;
+}
+.red svg {
+    fill: red;
+    stroke: red;
+}
+.white svg {
+    fill: rgb(198, 198, 198);
+    stroke: rgb(203, 203, 203);;
+}
