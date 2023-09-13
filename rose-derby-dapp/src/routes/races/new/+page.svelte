@@ -1,7 +1,8 @@
 <script lang="ts">
     import { connectedToSapphire, roseDerbyContract } from "$lib/Stores";
     import TransactionPending from "$lib/TransactionPending.svelte";
-    
+    import { goto } from "$app/navigation";
+
     const today: string = new Date().toISOString().split("T")[0];
 
     let disabled: boolean;
@@ -17,7 +18,12 @@
         submitting = true;
         $roseDerbyContract?.scheduleRace(Math.floor(new Date(postTime).getTime() / 1000), take, callerIncentive, { gasLimit: 10_000_000 })
             .then(transaction => {
-                tx = transaction.wait();
+                tx = transaction
+                    .wait()
+                    .then(receipt => {
+                        const createdRaceIndex = Number(receipt.logs[0].args[0]);
+                        goto(`/races/${createdRaceIndex}`);
+                    });
                 (event.target as HTMLFormElement).reset();
             })
             .catch(console.log)

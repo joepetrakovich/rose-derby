@@ -59,6 +59,40 @@ export const roseDerbyContractUnsigned: Readable<ethers.Contract|undefined> = de
     }
 });
 
+
+export const raceScheduledEvents: Readable<number> = derived(roseDerbyContractUnsigned, ($contract, set) => {
+    let e;
+    if ($contract) {
+        $contract.on(Events.RaceScheduled, (index, event) => {
+            e = event;
+            set(index);
+          });
+    }
+    return () => e?.removeListener();
+});
+
+export const betPlacedEvents: Readable<{index: number, horse: Horse, amount: bigint}> = derived(roseDerbyContractUnsigned, ($contract, set) => {
+    let e;
+    if ($contract) {
+        $contract.on(Events.BetPlaced, (index, horse, amount, event) => {
+            e = event;
+            set({index, horse, amount});
+          });
+    }
+    return () => e?.removeListener();
+});
+
+export const raceResultsDeterminedEvents: Readable<{index: number, results: bigint[]}|undefined> = derived(roseDerbyContractUnsigned, ($contract, set) => {
+    let e;
+    if ($contract) {
+        $contract.on(Events.RaceResultsDetermined, (index, results, event) => {
+            e = event;
+            set({index, results});
+          });
+    }
+    return () => e?.removeListener();
+}, undefined);
+
 export const horseWins: Readable<bigint[]> = derived(roseDerbyContractUnsigned, ($contract, set) => {
     if ($contract) {
         $contract.getHorseWins()
