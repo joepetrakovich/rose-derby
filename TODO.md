@@ -1,10 +1,11 @@
 
 # TODAY
 ------------------
-DONE - styling of results.
-DONE -- color dot on racelist
-DONE -- ordered horse svgs on race view.
-DONE -- added next race countdown
+DONE - after determining results, page should update to show them
+
+DONE - after creating race, jump to that race
+
+DONE - when time passes posttime while you're on the race page, it should be reactive and show determine results button, 
 
 # IN PROG
 ------------------
@@ -13,21 +14,16 @@ DONE -- added next race countdown
 ------------------
 - needed for hackathon entry:
 -- demo walthrough video posted to youtube.
+--- may reploy just to clear race list
 -- add some comments
 --optional-- a dev tutorial joe.ptrkv.ch
-
-- nice to haves
---- animation of horses running while determine race tx is going
---- live flashing events for races scheduled, bets, determining results (all useful live events)
---- when time passes posttime while you're on the race page, it should be reactive and show determine results button, same with after determining them
---- a record of "my races" with bets so you know what you won, what you played in.
 
 
 
 # NOTES
 ------------------
-Deloying the contracts with the account: 0x1Bca6F7bb997Bb9aE3164bB61a468F2a86893A30
-Rose Derby deployed to 0xb80377133EA58212E9ad9bB393483b9B8Dc00A10
+Deploying the contracts with the account: 0x1Bca6F7bb997Bb9aE3164bB61a468F2a86893A30
+Rose Derby deployed to 0xE8c2110D85Da3362A2C43334423Dce9091f1A973
 
 - could have a "posting soon" timer store that updates live
 - track time

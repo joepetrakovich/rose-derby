@@ -1,12 +1,13 @@
 <script lang="ts">
     import PlaceBet from '$lib/PlaceBet.svelte';
     import DetermineResults from '$lib/DetermineResults.svelte';
-    import { roseDerbyContractUnsigned } from '$lib/Stores.js';
+    import { raceResultsDeterminedEvents, roseDerbyContractUnsigned } from '$lib/Stores.js';
     import { Horse, type Race } from '$lib/Models.js';
     import formatEther, { blockTimestampToDate } from "$lib/Utils";
     import { DateTime } from 'luxon';
     import { readable } from 'svelte/store';
     import HorseIcon from '$lib/images/HorseIcon.svelte';
+    import { onMount } from 'svelte';
 
     export let data;
 
@@ -17,10 +18,17 @@
 
     $: $roseDerbyContractUnsigned && loadRace();
 
-    const startsIn = readable<string>('...', set => {
-        const interval = setInterval(() => set(postTime?.toRelative() ?? '...'), 1000);
+    const now = readable(DateTime.now(), (set) => {
+        set(DateTime.now());
+        
+        const interval = setInterval(() => {
+            set(DateTime.now());
+        }, 1000);
+        
         return () => clearInterval(interval);
     });
+
+    $: startsIn = $now && postTime && postTime.toRelative();
 
     function loadRace() {
         $roseDerbyContractUnsigned
@@ -43,14 +51,24 @@
             })
             .catch(console.log);
     }
+
+    onMount(() => {
+        const unsubscribe = raceResultsDeterminedEvents.subscribe(event => {
+            if (event?.index == index) {
+                loadRace();
+            }
+        });
+
+        return unsubscribe;
+    })
 </script>
 
 <div> 
     {#if race}
         <div>
             <span>Race # {index}</span> 
-            {#if postTime > DateTime.now()} 
-                <small>Starts {$startsIn}</small>
+            {#if postTime > $now} 
+                <small>Starts {startsIn}</small>
             {:else if !race.finished}
                 <small>Horses are ready!</small>
             {/if}
@@ -72,7 +90,7 @@
         </div>
 
         {#if !race.finished}
-            {#if DateTime.now() < postTime}
+            {#if $now < postTime}
                 <PlaceBet {index} on:bet-placed={loadRace} />
             {:else} 
                 <DetermineResults {index} />
