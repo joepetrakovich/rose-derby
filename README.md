@@ -72,7 +72,7 @@ To prepare and start the SvelteKit frontend, change to the front end folder `ros
 
 ## Usage
 
-With the dapp running locally in a browser with Metamask installed, you may create races, bet on them, and determine the results.  
+With the dapp running locally in a browser with Metamask installed, use the "Connect" button in the top right corner to connect your wallet to the Sapphire Testnet.  You may then create races, bet on them, and determine the results.   
 
 Use the refresh and withdraw buttons at the top winnings panel to check and withdraw winnings or to withdraw awarded incentives.  
 
