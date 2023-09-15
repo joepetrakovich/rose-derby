@@ -4,8 +4,6 @@ A horse race betting dApp built for the Oasis Privacy4Web3 Hackathon.
 
 ## Description
 
-A brief but informative overview of your project. Explain its purpose, features, and why it exists.
-
 Rose Derby is a horse betting "game", similar to real-world horse betting, except with simulated races using Oasis Sapphire RNG to determine the race results.  What makes it interesting is that the participants are all completely private but the statistics and game activity is public, so it's obvious people are playing (and winning), but no one knows _who_ is playing.  
 
 Players are incentivized to schedule and find participants for races by setting a % organizer "take" which awards them a percentage of the total betting pool on a race.  Then once the betting window has ended, players are then further incentivized to call the "determine race results" function to compute the results with Sapphire RNG and receive an additional percentage of the pool.
@@ -27,8 +25,6 @@ The contract owner receives a fixed 2% of every pool, and also receives any winn
 
 ## Getting Started
 
-Explain how to get the project up and running. Include detailed instructions on prerequisites and installation.
-
 To build and deploy this project for yourself, you'll need to first deploy the Rose Derby solidity contract, then use the deployment address and output ABI within the Svelte frontend.
 
 ### Prerequisites
@@ -41,8 +37,6 @@ The dapp is currently built assuming users have the Metamask Web3 Wallet extensi
 NodeJS with npm is used for project dependencies.
 
 ### Installation
-
-Provide step-by-step instructions on how to install your project. You can use code blocks to show commands or configurations.
 
 From the project root use npm to install dependencies.
 
