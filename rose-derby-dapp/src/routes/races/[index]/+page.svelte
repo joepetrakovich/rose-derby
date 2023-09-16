@@ -1,13 +1,13 @@
 <script lang="ts">
     import PlaceBet from '$lib/PlaceBet.svelte';
     import DetermineResults from '$lib/DetermineResults.svelte';
-    import { raceResultsDeterminedEvents, roseDerbyContractUnsigned } from '$lib/Stores.js';
+    import { roseDerbyContractUnsigned } from '$lib/Stores.js';
     import { Horse, type Race } from '$lib/Models.js';
     import formatEther, { blockTimestampToDate } from "$lib/Utils";
     import { DateTime } from 'luxon';
     import { readable } from 'svelte/store';
     import HorseIcon from '$lib/images/HorseIcon.svelte';
-    import { onMount } from 'svelte';
+    import TransactionPending from '$lib/TransactionPending.svelte';
 
     export let data;
 
@@ -15,6 +15,7 @@
     let race: Race;
     let postTime: DateTime;
     let results: { horse: Horse, position: number }[] = [];
+    let tx: Promise<any>;
 
     $: $roseDerbyContractUnsigned && loadRace();
 
@@ -51,16 +52,6 @@
             })
             .catch(console.log);
     }
-
-    onMount(() => {
-        const unsubscribe = raceResultsDeterminedEvents.subscribe(event => {
-            if (event?.index == index) {
-                loadRace();
-            }
-        });
-
-        return unsubscribe;
-    })
 </script>
 
 <div> 
@@ -91,9 +82,9 @@
 
         {#if !race.finished}
             {#if $now < postTime}
-                <PlaceBet {index} on:bet-placed={loadRace} />
+                <PlaceBet {index} on:bet-placed={loadRace} bind:tx />
             {:else} 
-                <DetermineResults {index} />
+                <DetermineResults {index} on:results-determined={loadRace} bind:tx />
             {/if}
         {:else}
             <div class="results">
@@ -112,6 +103,7 @@
         Loading race...
     {/if}
 </div>
+<TransactionPending {tx} />
 
 <style>
     div:not(div > div) {

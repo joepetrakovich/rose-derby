@@ -1,24 +1,28 @@
 <script lang="ts">
     import { connectedToSapphire, roseDerbyContract } from "$lib/Stores";
-    import TransactionPending from "$lib/TransactionPending.svelte";
+    import { createEventDispatcher } from "svelte";
     import FlagIcon from "./images/FlagIcon.svelte";
 
     export let index: number;
+    export let tx: Promise<any>;
+
+    const dispatch = createEventDispatcher();
 
     let submitting: boolean;
     $: disabled = submitting || !$connectedToSapphire;
+
+    async function waitForConfirmation(transaction: any) {
+        await transaction.wait(1);
+        dispatch('results-determined');
+        submitting = false
+    }
   
-    let tx: Promise<any>;
     const handleSubmit = (event: Event) => {
         submitting = true;
         $roseDerbyContract
             ?.determineResults(index, { gasLimit: 10_000_000 })
-            .then(transaction => {
-                tx = transaction.wait();
-                (event.target as HTMLFormElement).reset();
-            })
-            .catch(console.log)
-            .finally(() => submitting = false)
+            .then(receipt => {tx = waitForConfirmation(receipt); (event.target as HTMLFormElement).reset();})
+            .catch(console.log);
     }
 </script>
 
@@ -27,7 +31,6 @@
         Determine Results
         <FlagIcon />
     </button>
-    <TransactionPending {tx} />
 </form>
 
 <style>
@@ -52,5 +55,11 @@
     button:hover {
         cursor: pointer;
         filter: brightness(var(--hover-brightness));
+    }
+    button:disabled {
+        background-color: gray;
+        color: rgb(218, 218, 218);
+        cursor: default;
+        filter: unset !important;
     }
 </style>
