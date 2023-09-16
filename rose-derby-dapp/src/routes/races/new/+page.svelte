@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { connectedToSapphire, roseDerbyContract } from "$lib/Stores";
+    import { connectedToSapphire, races, roseDerbyContract } from "$lib/Stores";
     import TransactionPending from "$lib/TransactionPending.svelte";
     import { goto } from "$app/navigation";
 
@@ -22,6 +22,10 @@
                                 .then(receipt => {
                                     const createdRaceIndex = Number(receipt.logs[0].args[0]);
                                     goto(`/races/${createdRaceIndex}`);
+                                })
+                                .catch((error) => {
+                                    console.log(error);
+                                    goto(`/races/${$races.length}`);
                                 });
                     
                 (event.target as HTMLFormElement).reset();

@@ -1,9 +1,10 @@
 <script lang="ts">
-    import TrophyIcon from "$lib/images/TrophyIcon.svelte";
     import { roseDerbyContract } from "./Stores";
-    import formatEther from "./Utils";
-    import RefreshIcon from "./images/RefreshIcon.svelte";
-    import WithdrawIcon from "./images/WithdrawIcon.svelte";
+    import TrophyIcon from "$lib/images/TrophyIcon.svelte";
+    import formatEther from "$lib/Utils";
+    import RefreshIcon from "$lib/images/RefreshIcon.svelte";
+    import WithdrawIcon from "$lib/images/WithdrawIcon.svelte";
+    import ShortSuccessSound from "$lib/sounds/short-success.mp3";
     
     let amount: bigint = 0n;
     let refreshing: boolean;
@@ -15,7 +16,12 @@
         refreshing = true;
         $roseDerbyContract
             .getWinningsBalance({ gasLimit: 10_000_000 })
-            .then(balance => amount = balance)
+            .then(balance => {
+                if (balance > 0 && balance > amount) {
+                    new Audio(ShortSuccessSound).play();
+                }
+                amount = balance;
+            })
             .catch(console.log)
             .finally(() => refreshing = false);
     }
