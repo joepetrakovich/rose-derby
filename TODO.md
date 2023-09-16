@@ -19,9 +19,6 @@ DONE - fix determine being inconsistent
 
 # NOTES
 ------------------
-Deploying the contracts with the account: 0x1Bca6F7bb997Bb9aE3164bB61a468F2a86893A30
-Rose Derby deployed to 0xE8c2110D85Da3362A2C43334423Dce9091f1A973
-
 - could have a "posting soon" timer store that updates live
 - track time
 
