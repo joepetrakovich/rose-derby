@@ -1,32 +1,32 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
     import { Horse } from "$lib/Models";
     import { connectedToSapphire, roseDerbyContract } from "$lib/Stores";
-    import TransactionPending from "$lib/TransactionPending.svelte";
     import { ethers } from "ethers";
     import HorseIcon from "./images/HorseIcon.svelte";
+    import { createEventDispatcher } from "svelte";
 
     export let index: number;
+    export let tx: Promise<any>;
 
-    const dispatch = createEventDispatcher();
     const horses = Object.keys(Horse).filter((v) => isNaN(Number(v)));
+    const dispatch = createEventDispatcher();
 
     let selectedHorse: Horse;
     let betAmount: number;
     let submitting: boolean;
     $: disabled = submitting || !$connectedToSapphire;
   
-    let tx: Promise<any>;
+    async function waitForConfirmation(transaction: any) {
+        await transaction.wait(1);
+        dispatch('bet-placed');
+    }
+
     const handleSubmit = (event: Event) => {
         submitting = true;
         const betAmountInWei: BigInt = ethers.parseEther(betAmount.toString());
-        console.log("betting %d ether on horse %s (%d)", betAmountInWei, selectedHorse, Horse[selectedHorse]);
         $roseDerbyContract
             ?.placeBet(index, Horse[selectedHorse], { gasLimit: 10_000_000, value: betAmountInWei })
-            .then(transaction => {
-                tx = transaction.wait()
-                    .then(() => dispatch('bet-placed'));
-            })
+            .then(receipt => {tx = waitForConfirmation(receipt); (event.target as HTMLFormElement).reset();})
             .catch(console.log)
             .finally(() => submitting = false)
     }
@@ -48,7 +48,6 @@
     <input type="number" min="2" required bind:value={betAmount} placeholder="(min. 2 ROSE)" />
     
     <button {disabled}>Place Bet</button>
-    <TransactionPending {tx} />
 </form>
 
 <style>
@@ -84,9 +83,6 @@
          background-color: white;
          border-radius: var(--container-radius);
     }
-    /* [type=radio]:checked + label {
-        animation: flash-mid ease-in-out 2s infinite;
-    } */
     [type=number] {
         border-top: 0;
         border-left: 0;

@@ -1,8 +1,9 @@
 
 # TODAY
 ------------------
-DONE -- add license to code and add readme for 
-build instructions and keys.
+DONE - fix starts in when under 2 mins it should do 1.XX
+DONE - fix determine being inconsistent
+- record submission vid
 
 # IN PROG
 ------------------
@@ -13,6 +14,7 @@ build instructions and keys.
 -- demo walthrough video posted to youtube.
 -- may redeploy just to clear race list
 - optional-- a dev tutorial joe.ptrkv.ch
+- it seems like determine results event isnt working because page only refreshes sometimes
 
 
 # NOTES

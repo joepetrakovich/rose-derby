@@ -18,12 +18,12 @@
         submitting = true;
         $roseDerbyContract?.scheduleRace(Math.floor(new Date(postTime).getTime() / 1000), take, callerIncentive, { gasLimit: 10_000_000 })
             .then(transaction => {
-                tx = transaction
-                    .wait()
-                    .then(receipt => {
-                        const createdRaceIndex = Number(receipt.logs[0].args[0]);
-                        goto(`/races/${createdRaceIndex}`);
-                    });
+                tx = transaction.wait()
+                                .then(receipt => {
+                                    const createdRaceIndex = Number(receipt.logs[0].args[0]);
+                                    goto(`/races/${createdRaceIndex}`);
+                                });
+                    
                 (event.target as HTMLFormElement).reset();
             })
             .catch(console.log)
