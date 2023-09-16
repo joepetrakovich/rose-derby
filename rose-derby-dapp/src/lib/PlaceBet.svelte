@@ -2,8 +2,9 @@
     import { Horse } from "$lib/Models";
     import { connectedToSapphire, roseDerbyContract } from "$lib/Stores";
     import { ethers } from "ethers";
-    import HorseIcon from "./images/HorseIcon.svelte";
+    import HorseIcon from "$lib/images/HorseIcon.svelte";
     import { createEventDispatcher } from "svelte";
+    import ChaChingSound from "$lib/sounds/cha-ching.mp3"
 
     export let index: number;
     export let tx: Promise<any>;
@@ -17,8 +18,13 @@
     $: disabled = submitting || !$connectedToSapphire;
   
     async function waitForConfirmation(transaction: any) {
-        await transaction.wait(1);
+        try {
+            await transaction.wait();
+        } catch(error) {
+            console.log(error);
+        }
         dispatch('bet-placed');
+        new Audio(ChaChingSound).play();
     }
 
     const handleSubmit = (event: Event) => {

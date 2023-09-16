@@ -1,7 +1,8 @@
 <script lang="ts">
     import { connectedToSapphire, roseDerbyContract } from "$lib/Stores";
     import { createEventDispatcher } from "svelte";
-    import FlagIcon from "./images/FlagIcon.svelte";
+    import FlagIcon from "$lib/images/FlagIcon.svelte";
+    import SuccessSound from "$lib/sounds/success.mp3"
 
     export let index: number;
     export let tx: Promise<any>;
@@ -12,8 +13,13 @@
     $: disabled = submitting || !$connectedToSapphire;
 
     async function waitForConfirmation(transaction: any) {
-        await transaction.wait(1);
+        try {
+            await transaction.wait();
+        } catch(error) {
+            console.log(error);
+        }
         dispatch('results-determined');
+        new Audio(SuccessSound).play();
         submitting = false
     }
   

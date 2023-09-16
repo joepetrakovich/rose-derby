@@ -3,6 +3,8 @@
 ------------------
 DONE - fix starts in when under 2 mins it should do 1.XX
 DONE - fix determine being inconsistent
+DONE - add sounds
+- animate bet amount and refresh of winnings
 - record submission vid
 
 # IN PROG
