@@ -11,7 +11,7 @@
         display: flex;
         gap: var(--space-2);
         align-items: center;
-        margin-top: 16px;
+        margin-top: 18px;
         position: absolute;
     }
     i {
