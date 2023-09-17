@@ -78,13 +78,14 @@ import {
         expect(races.length).to.equal(1);
       });
 
-      it("Should set the organizer as private race metadata", async () => {
-        const { roseDerbyNonDeterministic, accountTwo, postTime } = await loadFixture(deployRoseDerbyFixture);
+      it("Should set the organizer and randomBytes as private race metadata", async () => {
+        const { roseDerbyDeterministic, accountTwo, postTime } = await loadFixture(deployRoseDerbyFixture);
 
-        await roseDerbyNonDeterministic.connect(accountTwo).scheduleRace(postTime, 5, 5);
+        await roseDerbyDeterministic.connect(accountTwo).scheduleRace(postTime, 5, 5);
 
-        const meta = await roseDerbyNonDeterministic.getPrivateRaceMetaByHorseRace(0);
+        const meta = await roseDerbyDeterministic.getPrivateRaceMetaByHorseRace(0);
         expect(meta.organizer).to.equal(accountTwo.address);
+        expect(meta.randomBytes).to.equal("0x307864316263306631326565");
       });
     });
 

@@ -19,11 +19,12 @@ contract RoseDerby {
         uint pool;
         bool finished;
         uint8 winner;
-        uint8[5] results;
+        uint8[NUM_HORSES] results;
     }
 
     struct PrivateRaceMeta {
         address organizer;
+        bytes randomBytes;
     }
 
     struct BetData {
@@ -43,7 +44,7 @@ contract RoseDerby {
 
     event RaceResultsDetermined(
          uint256 index, 
-         uint8[5] results
+         uint8[NUM_HORSES] results
      );
 
     address internal owner;
@@ -94,7 +95,8 @@ contract RoseDerby {
         races.push(race);
         _meta.push(
             PrivateRaceMeta({
-                organizer: msg.sender
+                organizer: msg.sender,
+                randomBytes: getRandomBytes(5, "")
             })
         );
 
@@ -129,8 +131,12 @@ contract RoseDerby {
         require(block.timestamp >= race.postTime, "Race hasn't started");
         require(!race.finished, "Race results already determined");
 
-        bytes memory randomBytes = getRandomBytes(5, "");
+        //randomBytes hidden and acquired prior to post time so malicious actor 
+        //can't revert the results tx if it doesn't go their way.
+        //The below array shuffle will always have the same outcome
+        //no matter how many times the function is reverted and recalled.
 
+        bytes memory randomBytes = _meta[index].randomBytes;
         uint8[5] memory results = [0, 1, 2, 3, 4];
 
         for (uint i = 0; i < results.length; i++) {
