@@ -19,9 +19,9 @@ The contract owner receives a fixed 2% of every pool, and also receives any winn
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
 - [Usage](#usage)
-  -[Incentives](#incentives)
-  -[Anonymity](#anonymity)
-  -[Live Demo](#live-demo-site)
+  - [Incentives](#incentives)
+  - [Anonymity](#anonymity)
+  - [Live Demo](#live-demo-site)
 - [License](#license)
 
 ## Getting Started
@@ -53,7 +53,7 @@ Run unit tests against the hardhat network, use:
 
 `npx hardhat test` or `npx hardhat coverage`
 
-To deploy the contract, ensure that the private key account added to the .env file has some Sapphire TEST tokens (can be acquired from the [faucet](https://faucet.testnet.oasis.dev/)) and run the following script via harhdat:
+To deploy the contract, ensure that the private key account added to the .env file has some Sapphire TEST tokens (can be acquired from the [faucet](https://faucet.testnet.oasis.dev/)) and run the following script via hardhat:
 
 `npx hardhat run scripts/deploy.ts --network sapphire_testnet`
 
