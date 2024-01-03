@@ -104,7 +104,7 @@ contract RoseDerby {
     }
 
     function placeBet(uint256 index, Horse horse) external payable raceExists(index) {
-        require(block.timestamp <= races[index].postTime, "Race already started");
+        require(block.timestamp < races[index].postTime, "Race already started");
         require(msg.value >= 2 ether, "Minimum bet is 2 ROSE");
         
         uint8 horseNum = uint8(horse);
